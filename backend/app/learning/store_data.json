@@ -1,0 +1,1106 @@
+{
+  "completed_lessons": [
+    "les-1-1",
+    "les-3-1"
+  ],
+  "exercise_attempts": [
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788918452.716687
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788918452.8222542
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788918452.9627535
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788918584.7277517
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788918584.765024
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788918584.8162687
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788919240.9825006
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788919240.9899528
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788919240.996725
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788919506.2782474
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788919506.2865727
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788919506.2946136
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788920326.8266993
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788920326.8521779
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788920326.869654
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788920452.4089844
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788920452.4174333
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788920452.4239342
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943026.136381
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943026.1456819
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788943026.1542864
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943152.3811147
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943152.3886964
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788943152.397269
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943535.6823776
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943535.6906393
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788943535.6985967
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943619.4180965
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788943619.42708
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788943619.434656
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944562.5934715
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944562.6044369
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788944562.613887
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944656.3773136
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944656.3894432
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788944656.3996828
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944965.593489
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788944965.6080935
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788944965.6205752
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945229.0223489
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945229.0368495
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788945229.04671
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945387.6130283
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945387.626222
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788945387.636655
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945917.262577
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788945917.3097508
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788945917.3548503
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788946299.9117637
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788946299.9266565
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788946299.9424238
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788946344.045911
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788946344.0581958
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788946344.0697134
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948310.2674778
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948310.275381
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788948310.2835708
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948311.7297893
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948472.5001223
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948472.5081606
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788948472.5161972
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948472.617883
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948637.7705297
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948637.784121
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788948637.7966392
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788948637.9281192
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949394.7360322
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949394.7460637
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788949394.7530391
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949394.8317356
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949464.9683597
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949464.977539
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788949464.9860997
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949465.0770638
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949466.7389748
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949549.7710428
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949549.780528
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788949549.7887437
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949549.870443
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949551.4294841
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949610.1567216
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949610.18679
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788949610.2312603
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949610.671512
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788949611.0482042
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968293.7112849
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968293.720997
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788968293.728993
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968293.8464718
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968293.9240763
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968370.6290152
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968370.6412935
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788968370.6504767
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968370.7349486
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788968370.8059769
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788969748.4533896
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788969748.4828632
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788969748.530643
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788969748.9161336
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788969749.2431781
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788970481.3793035
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788970481.3951788
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788970481.4105313
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788970481.5346003
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788970481.712448
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788971023.098094
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788971023.1081276
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788971023.1169305
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788971023.1957421
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788971023.265382
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788972575.5019383
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788972575.515636
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788972575.5275333
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788972575.638286
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788972575.7584817
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973535.3768756
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973535.3864088
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788973535.3946497
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973535.477088
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973535.5787292
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973631.4496436
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973631.4667099
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788973631.4812853
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973631.595469
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973631.6819208
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973986.5356112
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973986.5461483
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788973986.5558991
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973986.678922
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788973986.7732246
+    },
+    {
+      "exercise_id": "ex-1-1-1",
+      "concept_id": "qubit-definition",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788974312.3559992
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788974312.3675873
+    },
+    {
+      "exercise_id": "ex-1-2-2",
+      "concept_id": "superposition-challenge",
+      "passed": false,
+      "score": 0.0,
+      "timestamp": 1788974312.3764079
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788974312.5235054
+    },
+    {
+      "exercise_id": "ex-3-1-1",
+      "concept_id": "bell-state-challenge",
+      "passed": true,
+      "score": 1.0,
+      "timestamp": 1788974312.616996
+    }
+  ],
+  "assessment_attempts": [
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788948311.721746
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788948472.6081715
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788948637.9155788
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788949394.823229
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788949465.0685225
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788949549.8617058
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788949610.630386
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788968293.8319855
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788968370.7240667
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788969748.8809948
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788970481.5226796
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788971023.185536
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788972575.6292083
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788973535.4680777
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788973631.5839384
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788973986.6640513
+    },
+    {
+      "assessment_id": "ass-1-1",
+      "score": 1.0,
+      "total": 1,
+      "correct": 1,
+      "timestamp": 1788974312.4881806
+    }
+  ],
+  "concept_mastery": {
+    "qubit-definition": {
+      "concept_id": "qubit-definition",
+      "concept_name": "Qubit Definition",
+      "status": "MASTERED",
+      "mastery_score": 1.0,
+      "evidence_count": 35,
+      "attempts_count": 35,
+      "last_evaluated_at": 1788974312.3559992
+    },
+    "superposition-challenge": {
+      "concept_id": "superposition-challenge",
+      "concept_name": "Superposition Challenge",
+      "status": "COMPLETED",
+      "mastery_score": 0.65,
+      "evidence_count": 35,
+      "attempts_count": 70,
+      "last_evaluated_at": 1788974312.3764079
+    },
+    "bell-state-challenge": {
+      "concept_id": "bell-state-challenge",
+      "concept_name": "Bell State Challenge",
+      "status": "MASTERED",
+      "mastery_score": 1.0,
+      "evidence_count": 30,
+      "attempts_count": 30,
+      "last_evaluated_at": 1788974312.616996
+    }
+  },
+  "last_active_lesson": "les-3-1",
+  "hints_requested_count": 17,
+  "mistakes_count": 17
+}
