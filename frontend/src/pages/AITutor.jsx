@@ -1,42 +1,332 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { QuantumPage, QuantumHeader, QuantumPanel, QuantumCard, QuantumBadge, QuantumButton, QuantumInput } from '../components/ui/QuantumPrimitives';
 import { queryAI, buildContextEnvelope } from '../services/aiClient';
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function formatTime(ts) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+/**
+ * Minimal markdown renderer — handles **bold**, `code`, bullet lists,
+ * numbered lists, and newlines. No external deps needed.
+ */
+function renderMarkdown(text) {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+  const elements = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Blank line
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+
+    // Unordered list block
+    if (/^[-*•]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-*•]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^[-*•]\s+/, ''));
+        i++;
+      }
+      elements.push(
+        <ul key={i} style={{ margin: '6px 0 6px 18px', padding: 0 }}>
+          {items.map((it, idx) => (
+            <li key={idx} style={{ marginBottom: '3px', lineHeight: 1.55 }}>
+              {inlineFormat(it)}
+            </li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Numbered list block
+    if (/^\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\d+\.\s+/, ''));
+        i++;
+      }
+      elements.push(
+        <ol key={i} style={{ margin: '6px 0 6px 20px', padding: 0 }}>
+          {items.map((it, idx) => (
+            <li key={idx} style={{ marginBottom: '3px', lineHeight: 1.55 }}>
+              {inlineFormat(it)}
+            </li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // Code block (```)
+    if (line.startsWith('```')) {
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++; // skip closing ```
+      elements.push(
+        <pre key={i} style={{
+          background: '#0F172A', color: '#E2E8F0',
+          padding: '12px 14px', borderRadius: '6px',
+          fontSize: '0.82rem', overflowX: 'auto',
+          margin: '8px 0', fontFamily: 'monospace', lineHeight: 1.5
+        }}>
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      );
+      continue;
+    }
+
+    // Normal paragraph line
+    elements.push(
+      <p key={i} style={{ margin: '4px 0', lineHeight: 1.65 }}>
+        {inlineFormat(line)}
+      </p>
+    );
+    i++;
+  }
+
+  return elements;
+}
+
+/** Handles **bold**, *italic*, `inline code` within a string */
+function inlineFormat(text) {
+  const parts = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`)/g;
+  let last = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last) parts.push(text.slice(last, match.index));
+    if (match[2]) {
+      parts.push(<strong key={match.index}>{match[2]}</strong>);
+    } else if (match[3]) {
+      parts.push(<em key={match.index}>{match[3]}</em>);
+    } else if (match[4]) {
+      parts.push(
+        <code key={match.index} style={{
+          background: '#EFF6FF', color: '#1D4ED8',
+          padding: '1px 5px', borderRadius: '3px',
+          fontSize: '0.85em', fontFamily: 'monospace'
+        }}>
+          {match[4]}
+        </code>
+      );
+    }
+    last = match.index + match[0].length;
+  }
+
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length > 0 ? parts : text;
+}
+
+// ─── Suggested Questions ────────────────────────────────────────────────────
+
+const SUGGESTED_QUESTIONS = [
+  'What is a qubit and how is it different from a classical bit?',
+  'Explain superposition in simple terms',
+  'How does the Hadamard gate create equal superposition?',
+  'What is quantum entanglement?',
+  'How does Grover\'s algorithm achieve a quadratic speedup?',
+  "What is the difference between |0⟩ and |1⟩?",
+  'Explain the CNOT gate with an example',
+  'What is a Bell state and how do I create one?',
+  'Why do we measure probabilities instead of exact values?',
+  'What is quantum interference?',
+  'Explain Shor\'s algorithm simply',
+  'What is quantum decoherence?',
+];
+
+// ─── Message Bubble ──────────────────────────────────────────────────────────
+
+function MessageBubble({ msg }) {
+  const isAi = msg.role === 'ai';
+  const isSystem = msg.role === 'system';
+
+  if (isSystem) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0' }}>
+        <span style={{
+          fontSize: '0.72rem', color: '#64748B',
+          background: '#F1F5F9', border: '1px solid #E2E8F0',
+          borderRadius: '20px', padding: '3px 12px',
+          fontFamily: 'monospace'
+        }}>
+          {msg.text}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: isAi ? 'flex-start' : 'flex-end',
+      gap: '4px',
+      maxWidth: '100%'
+    }}>
+      {/* Avatar + name row */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '7px',
+        flexDirection: isAi ? 'row' : 'row-reverse'
+      }}>
+        <div style={{
+          width: '28px', height: '28px', borderRadius: '50%',
+          background: isAi
+            ? 'linear-gradient(135deg, #1D4ED8, #7C3AED)'
+            : 'linear-gradient(135deg, #0EA5E9, #06B6D4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '0.75rem', color: '#fff', fontWeight: 700,
+          flexShrink: 0
+        }}>
+          {isAi ? 'AI' : 'U'}
+        </div>
+        <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>
+          {isAi ? 'Quantum AI Tutor' : 'You'}
+        </span>
+        {msg.intent && (
+          <span style={{
+            fontSize: '0.65rem', color: '#7C3AED',
+            background: '#F5F3FF', border: '1px solid #DDD6FE',
+            borderRadius: '4px', padding: '1px 6px',
+            fontFamily: 'monospace'
+          }}>
+            {msg.intent}
+          </span>
+        )}
+      </div>
+
+      {/* Bubble */}
+      <div style={{
+        maxWidth: '88%',
+        padding: '13px 16px',
+        background: isAi ? '#FFFFFF' : 'linear-gradient(135deg, #1D4ED8, #2563EB)',
+        border: isAi ? '1px solid #E2E8F0' : 'none',
+        borderRadius: isAi ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
+        boxShadow: isAi ? '0 1px 4px rgba(0,0,0,0.07)' : '0 2px 8px rgba(37,99,235,0.25)',
+        color: isAi ? '#1E293B' : '#FFFFFF',
+        fontSize: '0.925rem',
+        lineHeight: 1.6
+      }}>
+        {isAi ? renderMarkdown(msg.text) : msg.text}
+
+        {/* Sources */}
+        {isAi && msg.sources && msg.sources.length > 0 && (
+          <div style={{
+            marginTop: '10px', paddingTop: '8px',
+            borderTop: '1px solid #E2E8F0',
+            fontSize: '0.75rem', color: '#64748B'
+          }}>
+            <span style={{ fontWeight: 700, color: '#1D4ED8' }}>
+              📚 Sources ({msg.sources.length}):
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+              {msg.sources.map((s, si) => (
+                <span key={si} style={{
+                  background: '#EFF6FF', color: '#1D4ED8',
+                  border: '1px solid #BFDBFE', borderRadius: '4px',
+                  padding: '2px 7px', fontSize: '0.7rem'
+                }}>
+                  {s.title || s.document_id}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Timestamp */}
+      <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>
+        {formatTime(msg.ts)}
+      </span>
+    </div>
+  );
+}
+
+// ─── Typing Indicator ────────────────────────────────────────────────────────
+
+function TypingIndicator() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '7px' }}>
+      <div style={{
+        width: '28px', height: '28px', borderRadius: '50%',
+        background: 'linear-gradient(135deg, #1D4ED8, #7C3AED)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '0.75rem', color: '#fff', fontWeight: 700, flexShrink: 0
+      }}>
+        AI
+      </div>
+      <div style={{
+        padding: '12px 16px',
+        background: '#FFFFFF', border: '1px solid #E2E8F0',
+        borderRadius: '4px 14px 14px 14px',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+        display: 'flex', alignItems: 'center', gap: '4px'
+      }}>
+        {[0, 1, 2].map(i => (
+          <span key={i} style={{
+            width: '7px', height: '7px', borderRadius: '50%',
+            background: '#1D4ED8', display: 'inline-block',
+            animation: `typingBounce 1.2s ease-in-out ${i * 0.2}s infinite`
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main AITutor Page ───────────────────────────────────────────────────────
 
 export default function AITutor() {
   const location = useLocation();
   const contextData = location.state || {};
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const [messages, setMessages] = useState([
     {
-      role: 'system',
-      text: 'llm_not_configured'
-    },
-    {
       role: 'ai',
-      text: 'AI Assistant Interface Ready. The platform intelligence layer is active and ready to process context across Quantum Lab, Circuit Builder, Algorithms, and Visualizations.',
-      sources: []
+      text: "Hello! I'm your **Quantum AI Academic Tutor** 🔬\n\nI can help you with:\n- Quantum gates and circuits\n- Superposition and entanglement\n- Quantum algorithms (Grover, Shor, VQE…)\n- Circuit debugging and analysis\n- Any concept you're studying\n\nAsk me anything — no question is too basic!",
+      sources: [],
+      ts: Date.now()
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [useMock, setUseMock] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleSendMessage = async () => {
-    if (!input.trim() || loading) return;
-    const userText = input.trim();
+  const sendMessage = useCallback(async (text) => {
+    const question = (text || input).trim();
+    if (!question || loading) return;
+
     setInput('');
+    setShowSuggestions(false);
 
-    setMessages(prev => [
-      ...prev,
-      { role: 'user', text: userText }
-    ]);
+    const userMsg = { role: 'user', text: question, ts: Date.now() };
+    setMessages(prev => [...prev, userMsg]);
     setLoading(true);
+
+    // Build history from current messages (exclude system)
+    const history = messages.filter(m => m.role === 'user' || m.role === 'ai');
 
     const envelope = buildContextEnvelope({
       page: 'aitutor',
@@ -46,186 +336,304 @@ export default function AITutor() {
     });
 
     const res = await queryAI({
-      question: userText,
+      question,
       taskType: 'chat',
       context: envelope,
-      providerOverride: useMock ? 'mock' : null
+      providerOverride: useMock ? 'mock' : null,
+      history
     });
+
+    const aiAnswer = res.answer === 'llm_not_configured'
+      ? "⚠️ The LLM provider isn't configured on the server yet.\n\nTo enable real AI responses:\n1. Open `backend/.env`\n2. Set `OPENAI_API_KEY=your_key_here`\n3. Restart the backend\n\nFor now, tick **Test Mock Provider** above to get sample responses."
+      : (res.answer || 'Sorry, I could not generate a response. Please try again.');
 
     setMessages(prev => [
       ...prev,
-      { role: 'system', text: res.status },
       {
         role: 'ai',
-        text: res.answer === 'llm_not_configured' 
-          ? 'LLM Provider unconfigured. (Add OPENAI_API_KEY to enable live generative AI responses or check "Test with Mock Provider" above).' 
-          : res.answer,
+        text: aiAnswer,
         intent: res.intent,
         sources: res.sources || [],
-        actions: res.actions || []
+        actions: res.actions || [],
+        ts: Date.now()
       }
     ]);
     setLoading(false);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, [input, loading, messages, contextData, useMock]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([{
+      role: 'ai',
+      text: "Chat cleared! I'm ready for your next question 🔬",
+      sources: [],
+      ts: Date.now()
+    }]);
+    setShowSuggestions(true);
   };
 
   return (
-    <QuantumPage env="aitutor" maxWidth={1280}>
-      <QuantumHeader
-        title="Contextual Quantum AI Tutor"
-        subtitle="Context-aware quantum learning assistant designed to ground explanations in live Q-AST circuits, backend statevectors, execution traces, and lesson progress."
-        category="ASSIST & EXPLAIN"
-        actions={
-          <div className="flex items-center space-x-3">
-            <label className="text-xs text-slate-300 flex items-center space-x-1 cursor-pointer">
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      height: '100%', width: '100%',
+      overflowY: 'auto', background: 'transparent'
+    }}>
+      {/* Inject typing animation keyframes */}
+      <style>{`
+        @keyframes typingBounce {
+          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+          30% { transform: translateY(-6px); opacity: 1; }
+        }
+        .chat-input:focus {
+          border-color: #1D4ED8 !important;
+          box-shadow: 0 0 0 3px rgba(29,78,216,0.12) !important;
+        }
+        .suggestion-pill:hover {
+          background: #EFF6FF !important;
+          border-color: #1D4ED8 !important;
+          color: #1D4ED8 !important;
+          transform: translateY(-1px);
+        }
+        .send-btn:hover:not(:disabled) {
+          background: #1E40AF !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(29,78,216,0.35) !important;
+        }
+        .send-btn:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+      `}</style>
+
+      <div style={{
+        maxWidth: '960px', width: '100%',
+        margin: '0 auto',
+        padding: '32px 32px 40px',
+        display: 'flex', flexDirection: 'column', gap: '0', flex: 1
+      }}>
+
+        {/* ── Header ── */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between',
+          alignItems: 'flex-start', paddingBottom: '20px',
+          borderBottom: '1px solid #E2E8F0', marginBottom: '0',
+          flexWrap: 'wrap', gap: '12px'
+        }}>
+          <div>
+            <div style={{
+              fontSize: '0.72rem', color: '#1D4ED8', fontWeight: 700,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              fontFamily: 'monospace', marginBottom: '5px'
+            }}>
+              AI TUTOR
+            </div>
+            <h1 style={{
+              fontSize: '1.9rem', fontWeight: 800, margin: 0,
+              letterSpacing: '-0.025em', color: '#0F172A', lineHeight: 1.2
+            }}>
+              Quantum AI Tutor
+            </h1>
+            <p style={{ fontSize: '0.925rem', color: '#64748B', margin: '6px 0 0 0' }}>
+              Ask any question about quantum computing — gates, algorithms, circuits, or concepts.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <label style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              fontSize: '0.8rem', color: '#64748B', cursor: 'pointer',
+              background: '#F8FAFC', border: '1px solid #E2E8F0',
+              borderRadius: '6px', padding: '6px 10px'
+            }}>
               <input
                 type="checkbox"
                 checked={useMock}
-                onChange={(e) => setUseMock(e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-cyan-500"
+                onChange={e => setUseMock(e.target.checked)}
+                style={{ accentColor: '#7C3AED' }}
               />
-              <span>Test Mock Provider</span>
+              Test Mock Provider
             </label>
-            <QuantumBadge variant={useMock ? 'violet' : 'amber'}>
-              {useMock ? 'MOCK PROVIDER' : 'PLATFORM INTELLIGENCE ACTIVE'}
-            </QuantumBadge>
+
+            <span style={{
+              fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace',
+              padding: '4px 10px', borderRadius: '4px',
+              background: useMock ? '#F5F3FF' : '#EFF6FF',
+              color: useMock ? '#6D28D9' : '#1D4ED8',
+              border: `1px solid ${useMock ? '#DDD6FE' : '#BFDBFE'}`
+            }}>
+              {useMock ? '● MOCK' : '● LIVE'}
+            </span>
+
+            {messages.length > 1 && (
+              <button onClick={clearChat} style={{
+                fontSize: '0.8rem', color: '#64748B', cursor: 'pointer',
+                background: 'transparent', border: '1px solid #E2E8F0',
+                borderRadius: '6px', padding: '6px 12px',
+                transition: 'all 0.15s'
+              }}>
+                Clear Chat
+              </button>
+            )}
           </div>
-        }
-      />
+        </div>
 
-      {/* Main Layout: Conversation + Quantum Context Inspector */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '24px', alignItems: 'start' }}>
-        
-        {/* Left Column: Chat Conversation */}
-        <QuantumPanel title="Conversation History" badgeText="Context Grounded" badgeVariant="violet">
-          <div 
-            style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '16px', 
-              minHeight: '360px', 
-              maxHeight: '500px', 
-              overflowY: 'auto',
-              padding: '16px',
-              backgroundColor: 'var(--bg-primary)',
-              borderRadius: '6px',
-              border: '1px solid var(--border-subtle)'
-            }}
-          >
-            {messages.map((m, idx) => {
-              if (m.role === 'system') {
-                return (
-                  <div key={idx} style={{ alignSelf: 'center', padding: '6px 14px', backgroundColor: m.text === 'success' || m.text === 'mock_response' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '12px', fontSize: '0.8rem', color: m.text === 'success' || m.text === 'mock_response' ? '#34d399' : '#fbbf24', fontFamily: 'monospace' }}>
-                    Status: {m.text}
-                  </div>
-                );
-              }
+        {/* ── Chat Window ── */}
+        <div style={{
+          background: '#F8FAFC', borderRadius: '0 0 12px 12px',
+          border: '1px solid #E2E8F0', borderTop: 'none',
+          display: 'flex', flexDirection: 'column',
+          minHeight: '480px', flex: 1
+        }}>
 
-              const isAi = m.role === 'ai';
+          {/* Messages scroll area */}
+          <div style={{
+            flex: 1, overflowY: 'auto', padding: '24px 24px 16px',
+            display: 'flex', flexDirection: 'column', gap: '20px',
+            minHeight: '380px', maxHeight: '560px'
+          }}>
+            {messages.map((msg, idx) => (
+              <MessageBubble key={idx} msg={msg} />
+            ))}
 
-              return (
-                <div
-                  key={idx}
-                  style={{
-                    alignSelf: isAi ? 'flex-start' : 'flex-end',
-                    maxWidth: '85%',
-                    padding: '14px 18px',
-                    backgroundColor: isAi ? 'rgba(11, 17, 33, 0.9)' : 'rgba(6, 182, 212, 0.12)',
-                    border: isAi ? '1px solid var(--border-active)' : '1px solid var(--accent-secondary)',
-                    borderRadius: '8px',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.6
-                  }}
-                >
-                  <div style={{ fontSize: '0.75rem', color: isAi ? 'var(--accent-secondary)' : 'var(--accent-primary)', fontWeight: 700, fontFamily: 'monospace', marginBottom: '4px', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{isAi ? 'Quantum Assistant' : 'Learner'}</span>
-                    {isAi && m.intent && <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>Intent: {m.intent}</span>}
-                  </div>
-                  {m.text}
-
-                  {/* Sources display */}
-                  {isAi && m.sources && m.sources.length > 0 && (
-                    <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.75rem', color: '#94a3b8' }}>
-                      <strong style={{ color: '#38bdf8' }}>Sources ({m.sources.length}):</strong>
-                      <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
-                        {m.sources.map((s, sIdx) => (
-                          <li key={sIdx}>{s.title || s.document_id}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {loading && <TypingIndicator />}
             <div ref={chatEndRef} />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <QuantumInput
-                placeholder="Ask a question about the attached circuit or lesson..."
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                disabled={loading}
-                style={{ width: '100%' }}
-              />
-            </div>
-            <QuantumButton variant="primary" onClick={handleSendMessage} disabled={!input.trim() || loading}>
-              {loading ? 'ANALYZING...' : 'SEND'}
-            </QuantumButton>
-          </div>
-        </QuantumPanel>
-
-        {/* Right Column: Quantum Context Inspector */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <QuantumPanel title="Attached Quantum Context" badgeText="Live Inspector" badgeVariant="cyan">
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
-              This panel inspects the exact state payload that will be provided to the AI intelligence core.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
-              <QuantumCard hoverable={false} active={!!(contextData?.circuitContext || contextData?.circuit)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Q-AST Circuit Payload</span>
-                  <QuantumBadge variant={(contextData?.circuitContext || contextData?.circuit) ? 'green' : 'amber'}>
-                    {(contextData?.circuitContext || contextData?.circuit) ? 'ATTACHED' : 'NONE'}
-                  </QuantumBadge>
-                </div>
-              </QuantumCard>
-
-              <QuantumCard hoverable={false} active={!!(contextData?.latestResult || contextData?.quantum_result)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Statevector Simulation Result</span>
-                  <QuantumBadge variant={(contextData?.latestResult || contextData?.quantum_result) ? 'green' : 'amber'}>
-                    {(contextData?.latestResult || contextData?.quantum_result) ? 'ATTACHED' : 'NONE'}
-                  </QuantumBadge>
-                </div>
-              </QuantumCard>
-
-              <QuantumCard hoverable={false} active={!!contextData?.lessonId}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Active Lesson Context</span>
-                  <QuantumBadge variant={contextData?.lessonId ? 'green' : 'amber'}>
-                    {contextData?.lessonId ? contextData.lessonId : 'NONE'}
-                  </QuantumBadge>
-                </div>
-              </QuantumCard>
-            </div>
-          </QuantumPanel>
-
-          <QuantumPanel title="System Architecture Notice">
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              <p style={{ margin: '0 0 8px 0', color: '#38bdf8', fontWeight: 600 }}>
-                Phase 5 Central AI Intelligence Core Active
+          {/* Suggested questions */}
+          {showSuggestions && messages.length <= 1 && (
+            <div style={{
+              padding: '0 24px 16px',
+              borderTop: '1px solid #E2E8F0', paddingTop: '14px'
+            }}>
+              <p style={{
+                fontSize: '0.75rem', color: '#64748B', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+                margin: '0 0 10px 0', fontFamily: 'monospace'
+              }}>
+                Suggested Questions
               </p>
-              Quantum simulation remains 100% in the authoritative backend engine. The AI interprets, explains, and acts on verified execution state without duplicating simulation mechanics.
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: '7px'
+              }}>
+                {SUGGESTED_QUESTIONS.map((q, i) => (
+                  <button
+                    key={i}
+                    className="suggestion-pill"
+                    onClick={() => sendMessage(q)}
+                    style={{
+                      fontSize: '0.8rem', color: '#374151',
+                      background: '#FFFFFF', border: '1px solid #D1D5DB',
+                      borderRadius: '20px', padding: '5px 13px',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
-          </QuantumPanel>
+          )}
+
+          {/* Input bar */}
+          <div style={{
+            padding: '14px 18px',
+            borderTop: '1px solid #E2E8F0',
+            background: '#FFFFFF',
+            borderRadius: '0 0 12px 12px',
+            display: 'flex', gap: '10px', alignItems: 'flex-end'
+          }}>
+            <textarea
+              ref={inputRef}
+              className="chat-input"
+              rows={1}
+              value={input}
+              onChange={e => {
+                setInput(e.target.value);
+                // Auto-resize
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about quantum gates, algorithms, circuits, or any concept... (Enter to send)"
+              disabled={loading}
+              style={{
+                flex: 1, resize: 'none', overflow: 'hidden',
+                padding: '10px 14px',
+                background: '#F8FAFC', color: '#0F172A',
+                border: '1.5px solid #CBD5E1', borderRadius: '8px',
+                fontFamily: 'inherit', fontSize: '0.925rem',
+                lineHeight: 1.5, outline: 'none',
+                transition: 'border-color 0.15s, box-shadow 0.15s',
+                minHeight: '42px'
+              }}
+            />
+            <button
+              className="send-btn"
+              onClick={() => sendMessage()}
+              disabled={!input.trim() || loading}
+              style={{
+                padding: '10px 20px', borderRadius: '8px',
+                background: '#1D4ED8', color: '#FFFFFF',
+                border: 'none', fontWeight: 700, fontSize: '0.875rem',
+                cursor: 'pointer', transition: 'all 0.15s',
+                boxShadow: '0 2px 8px rgba(29,78,216,0.2)',
+                whiteSpace: 'nowrap', alignSelf: 'flex-end',
+                height: '42px', minWidth: '80px'
+              }}
+            >
+              {loading ? (
+                <span style={{
+                  width: '16px', height: '16px',
+                  border: '2px solid rgba(255,255,255,0.5)',
+                  borderTopColor: '#fff', borderRadius: '50%',
+                  display: 'inline-block',
+                  animation: 'typingBounce 0.8s linear infinite'
+                }} />
+              ) : (
+                <>Send ➤</>
+              )}
+            </button>
+          </div>
         </div>
 
+        {/* Context info footer */}
+        {(contextData?.circuitContext || contextData?.lessonId) && (
+          <div style={{
+            marginTop: '16px', padding: '12px 16px',
+            background: '#EFF6FF', border: '1px solid #BFDBFE',
+            borderRadius: '8px', display: 'flex', gap: '16px',
+            flexWrap: 'wrap', alignItems: 'center'
+          }}>
+            <span style={{ fontSize: '0.78rem', color: '#1D4ED8', fontWeight: 700 }}>
+              📎 Active Context:
+            </span>
+            {contextData?.circuitContext && (
+              <span style={{
+                fontSize: '0.78rem', color: '#1D4ED8',
+                background: '#DBEAFE', borderRadius: '4px', padding: '2px 8px'
+              }}>
+                Circuit attached
+              </span>
+            )}
+            {contextData?.lessonId && (
+              <span style={{
+                fontSize: '0.78rem', color: '#1D4ED8',
+                background: '#DBEAFE', borderRadius: '4px', padding: '2px 8px'
+              }}>
+                Lesson: {contextData.lessonId}
+              </span>
+            )}
+          </div>
+        )}
       </div>
-    </QuantumPage>
+    </div>
   );
 }
-

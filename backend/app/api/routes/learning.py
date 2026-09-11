@@ -196,7 +196,13 @@ def submit_challenge(challenge_id: str, submission: ChallengeSubmission) -> Dict
     Evaluate a circuit challenge by running the submitted Q-AST on the actual quantum engine.
     Resource limit checks: Enforce maximum qubit count <= 16 to prevent computational overload.
     """
-    if submission.num_qubits > 16:
+    num_qubits = submission.num_qubits or 2
+    operations = submission.operations or []
+    if submission.qast:
+        num_qubits = submission.qast.get("num_qubits", num_qubits)
+        operations = submission.qast.get("operations", operations)
+
+    if num_qubits > 16:
         raise HTTPException(status_code=400, detail="Qubit limit exceeded for learning challenge. Maximum allowed is 16 qubits.")
 
     target_behavior = None
@@ -210,12 +216,12 @@ def submit_challenge(challenge_id: str, submission: ChallengeSubmission) -> Dict
                     break
 
     if not target_behavior:
-        target_behavior = {"num_qubits": submission.num_qubits, "min_prob_0": 0.45}
+        target_behavior = {"num_qubits": num_qubits, "min_prob_0": 0.45}
 
     eval_res = challenge_evaluator.evaluate(
         challenge_id=challenge_id,
-        num_qubits=submission.num_qubits,
-        operations=submission.operations,
+        num_qubits=num_qubits,
+        operations=operations,
         target_behavior=target_behavior
     )
 
@@ -224,6 +230,7 @@ def submit_challenge(challenge_id: str, submission: ChallengeSubmission) -> Dict
     return {
         "challenge_id": challenge_id,
         "passed": eval_res["passed"],
+        "is_correct": eval_res["passed"],
         "score": eval_res["score"],
         "feedback": eval_res["feedback"],
         "empirical_metrics": eval_res["empirical_metrics"]
@@ -244,29 +251,33 @@ def submit_exercise(exercise_id: str, submission: ExerciseSubmission) -> Dict[st
         raise HTTPException(status_code=404, detail=f"Exercise '{exercise_id}' not found.")
 
     passed = False
-    feedback = ""
     concept_id = found_ex.get("concept_id", "general")
+    options = found_ex.get("options", [])
+    correct_idx = found_ex.get("correct_option", 0)
 
-    if found_ex["type"] == "multiple_choice":
-        options = found_ex.get("options", [])
+    if found_ex.get("type") == "multiple_choice":
         if isinstance(submission.answer, int) and 0 <= submission.answer < len(options):
-            selected_text = options[submission.answer].lower()
-            if any(k in selected_text for k in ["equal superposition", "|1|²", "|1⟩", "cnot", "1 query", "1.0", "10", "q0", "1/2", "|0⟩ = [1, 0]", "resets", "flips", "|α|² + |β|² = 1"]):
-                passed = True
-            elif submission.answer in (1, 2, 3):
-                passed = True
+            passed = (submission.answer == correct_idx)
+        elif isinstance(submission.answer, str) and len(options) > correct_idx:
+            passed = (submission.answer.strip().lower() == options[correct_idx].strip().lower())
+    elif found_ex.get("type") in ("numeric", "text"):
+        expected = str(found_ex.get("expected_answer", "")).strip().lower()
+        if expected:
+            passed = (str(submission.answer).strip().lower() == expected)
+        else:
+            passed = True
 
-        feedback = "Correct! " + found_ex["explanation"] if passed else "Incorrect. " + found_ex["explanation"]
-
+    feedback = "Correct! " + found_ex.get("explanation", "") if passed else "Incorrect. " + found_ex.get("explanation", "")
     score = 1.0 if passed else 0.0
     learning_store.record_exercise_attempt(exercise_id, concept_id, passed, score)
 
     return {
         "exercise_id": exercise_id,
         "passed": passed,
+        "is_correct": passed,
         "score": score,
         "feedback": feedback,
-        "explanation": found_ex["explanation"]
+        "explanation": found_ex.get("explanation", "")
     }
 
 @router.get("/mastery")

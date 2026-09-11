@@ -29,8 +29,12 @@ CONSTRAINT:
   pass is a separate run.
 """
 import numpy as np
-import qiskit
-from qiskit_aer import AerSimulator
+try:
+    import qiskit
+    from qiskit_aer import AerSimulator
+    _QISKIT_AVAILABLE = True
+except ImportError:
+    _QISKIT_AVAILABLE = False
 from typing import Optional, List, Dict, Any, Tuple
 
 from app.qast.nodes import Circuit, GateNode, MeasurementNode, ResetNode, ConditionalNode
@@ -61,6 +65,9 @@ def _compute_probs(sv: np.ndarray, num_qubits: int) -> Dict[str, float]:
 
 class QiskitAerAdapter:
     def __init__(self):
+        if not _QISKIT_AVAILABLE:
+            self.simulator = None
+            return
         self.simulator = AerSimulator(method="statevector")
 
     def _apply_gate_to_qc(self, qc: qiskit.QuantumCircuit, op_gate: str,
@@ -101,6 +108,8 @@ class QiskitAerAdapter:
             raise ValueError(f"Unsupported gate: {op_gate}")
 
     def execute(self, circuit: Circuit) -> Any:
+        if not _QISKIT_AVAILABLE:
+            raise ValueError("qiskit_aer: Qiskit is not installed. Run: pip install qiskit qiskit-aer")
         """
         Execute circuit. Returns a tuple (qiskit_result, trace_data) where:
         - qiskit_result: the standard Qiskit result for normalizer compatibility

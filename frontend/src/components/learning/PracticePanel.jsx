@@ -48,6 +48,7 @@ export default function PracticePanel({ exercises, onAttemptCompleted }) {
       {exercises.map((ex, idx) => {
         const isSubmitted = !!submissions[ex.id];
         const result = submissions[ex.id];
+        const isPassed = Boolean(result?.is_correct ?? result?.passed);
         const isCurrentLoading = !!loading[ex.id];
         const currentError = errors[ex.id];
         const currentVal = selectedAnswers[ex.id];
@@ -84,10 +85,10 @@ export default function PracticePanel({ exercises, onAttemptCompleted }) {
                   let textColor = 'var(--text-primary)';
 
                   if (isSubmitted) {
-                    if (result.is_correct && currentVal === optIdx) {
+                    if (isPassed && currentVal === optIdx) {
                       borderStyle = '1px solid var(--gate-y)';
                       bgStyle = 'rgba(16, 185, 129, 0.12)';
-                    } else if (!result.is_correct && currentVal === optIdx) {
+                    } else if (!isPassed && currentVal === optIdx) {
                       borderStyle = '1px solid var(--gate-x)';
                       bgStyle = 'rgba(239, 68, 68, 0.12)';
                     }
@@ -164,14 +165,14 @@ export default function PracticePanel({ exercises, onAttemptCompleted }) {
               <div 
                 style={{
                   padding: '20px',
-                  backgroundColor: result.is_correct ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                  backgroundColor: isPassed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                   borderRadius: '6px',
-                  border: `1px solid ${result.is_correct ? 'var(--gate-y)' : 'var(--gate-x)'}`,
+                  border: `1px solid ${isPassed ? 'var(--gate-y)' : 'var(--gate-x)'}`,
                   marginBottom: '20px'
                 }}
               >
-                <div style={{ fontWeight: 600, fontSize: '1.05rem', color: result.is_correct ? 'var(--gate-y)' : 'var(--gate-x)', marginBottom: '8px' }}>
-                  {result.is_correct ? '✓ Correct Answer' : '✗ Incorrect Answer'}
+                <div style={{ fontWeight: 600, fontSize: '1.05rem', color: isPassed ? 'var(--gate-y)' : 'var(--gate-x)', marginBottom: '8px' }}>
+                  {isPassed ? '✓ Correct Answer' : '✗ Incorrect Answer'}
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
                   {result.explanation}

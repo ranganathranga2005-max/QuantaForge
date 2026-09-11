@@ -14,8 +14,8 @@ export default function Learn() {
   const [error, setError] = useState(null);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
 
-  const loadLearningState = useCallback(async () => {
-    setIsLoading(true);
+  const loadLearningState = useCallback(async (isInitial = false) => {
+    if (isInitial) setIsLoading(true);
     setError(null);
     try {
       const [currData, progData, mastData, recData] = await Promise.all([
@@ -33,13 +33,15 @@ export default function Learn() {
       console.error('Error fetching learning state:', err);
       setError(err.message);
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadLearningState();
+    loadLearningState(true);
   }, [loadLearningState]);
+
+  const modulesList = Array.isArray(curriculum) ? curriculum : (curriculum?.modules || []);
 
   const handleSelectLesson = async (lessonId) => {
     setIsLoading(true);
@@ -49,7 +51,7 @@ export default function Learn() {
         setSelectedLesson(lessonData);
       } else {
         // Fallback search in curriculum modules if API call fails
-        for (const mod of (curriculum?.modules || [])) {
+        for (const mod of modulesList) {
           const found = mod.lessons?.find(l => l.id === lessonId);
           if (found) {
             setSelectedLesson(found);
@@ -139,7 +141,7 @@ export default function Learn() {
         {/* Render View */}
         {!isLoading && !selectedLesson && (
           <CurriculumOverview
-            modules={curriculum?.modules || []}
+            modules={modulesList}
             progress={progress}
             mastery={mastery}
             onSelectLesson={handleSelectLesson}

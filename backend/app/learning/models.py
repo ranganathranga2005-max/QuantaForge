@@ -88,13 +88,14 @@ class Course(BaseModel):
     lessons: List[Lesson] = Field(default_factory=list)
 
 class ExerciseSubmission(BaseModel):
-    exercise_id: str
+    exercise_id: Optional[str] = None
     answer: Union[int, float, str, Dict[str, Any]]
 
 class ChallengeSubmission(BaseModel):
-    challenge_id: str
-    num_qubits: int
-    operations: List[Dict[str, Any]]
+    challenge_id: Optional[str] = None
+    num_qubits: Optional[int] = 2
+    operations: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
+    qast: Optional[Dict[str, Any]] = None
 
 class SubmissionResult(BaseModel):
     exercise_id: str
@@ -105,7 +106,7 @@ class SubmissionResult(BaseModel):
     empirical_metrics: Optional[Dict[str, Any]] = None
 
 class AssessmentSubmission(BaseModel):
-    assessment_id: str
+    assessment_id: Optional[str] = None
     answers: Dict[str, int]  # question_id -> selected option index
 
 class AssessmentResult(BaseModel):

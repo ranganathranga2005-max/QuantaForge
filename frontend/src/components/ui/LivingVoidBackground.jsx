@@ -18,14 +18,14 @@ export default function LivingVoidBackground() {
     };
     window.addEventListener('resize', handleResize);
 
-    // Particle setup
-    const particleCount = 45;
-    const particles = Array.from({ length: particleCount }, () => ({
+    // Modest floating nodes
+    const nodeCount = 30;
+    const nodes = Array.from({ length: nodeCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      radius: Math.random() * 1.5 + 0.8,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      radius: Math.random() * 1.5 + 1,
     }));
 
     let mouseX = -1000;
@@ -37,16 +37,15 @@ export default function LivingVoidBackground() {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Check reduced motion preference
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw faint grid background
-      ctx.strokeStyle = 'rgba(30, 41, 59, 0.25)';
+      // Clean, very faint engineering grid
+      ctx.strokeStyle = 'rgba(226, 232, 240, 0.7)';
       ctx.lineWidth = 1;
-      const gridSize = 60;
+      const gridSize = 48;
       for (let x = 0; x < width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -62,40 +61,39 @@ export default function LivingVoidBackground() {
 
       if (mediaQuery.matches) return;
 
-      // Update & render particles
-      particles.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
+      // Draw subtle nodes & connect lines
+      nodes.forEach((n, i) => {
+        n.x += n.vx;
+        n.y += n.vy;
 
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+        if (n.x < 0 || n.x > width) n.vx *= -1;
+        if (n.y < 0 || n.y > height) n.vy *= -1;
 
-        // Subtle mouse repulsion
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
+        // Subtle mouse interaction
+        const dx = mouseX - n.x;
+        const dy = mouseY - n.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          p.x -= (dx / dist) * 0.5;
-          p.y -= (dy / dist) * 0.5;
+        if (dist < 100) {
+          n.x -= (dx / dist) * 0.4;
+          n.y -= (dy / dist) * 0.4;
         }
 
-        ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+        ctx.fillStyle = 'rgba(37, 99, 235, 0.25)';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Connect nearby particles with subtle trace lines
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dX = p.x - p2.x;
-          const dY = p.y - p2.y;
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n2 = nodes[j];
+          const dX = n.x - n2.x;
+          const dY = n.y - n2.y;
           const d = Math.sqrt(dX * dX + dY * dY);
-          if (d < 110) {
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.25 * (1 - d / 110)})`;
+          if (d < 120) {
+            ctx.strokeStyle = `rgba(148, 163, 184, ${0.2 * (1 - d / 120)})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(n2.x, n2.y);
             ctx.stroke();
           }
         }
@@ -124,7 +122,7 @@ export default function LivingVoidBackground() {
         height: '100vh',
         pointerEvents: 'none',
         zIndex: 0,
-        opacity: 0.85
+        backgroundColor: '#F8FAFC'
       }}
     />
   );

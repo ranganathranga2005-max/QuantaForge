@@ -1,9 +1,24 @@
 import os
+from pathlib import Path
 from app.ai.llm.base import LLMProviderInterface
+
+# Load .env from the backend root so OPENAI_API_KEY is always available
+try:
+    from dotenv import load_dotenv
+    _env_path = Path(__file__).resolve().parents[4] / ".env"
+    load_dotenv(dotenv_path=_env_path, override=False)
+except ImportError:
+    pass
 
 class OpenAIProvider(LLMProviderInterface):
     def __init__(self):
-        self.api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        # Read from settings (pydantic-settings already loaded .env)
+        try:
+            from app.core.config import settings
+            self.api_key = settings.openai_api_key.strip()
+        except Exception:
+            self.api_key = os.getenv("OPENAI_API_KEY", "").strip()
+
         self.model = os.getenv("LLM_MODEL", "gpt-4o-mini")
         if self.api_key and self.api_key != "dummy":
             try:

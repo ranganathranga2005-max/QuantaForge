@@ -1,24 +1,11 @@
 import React from 'react';
 
 /**
- * QUANTUM DESIGN SYSTEM PRIMITIVES
+ * QUANTUM DESIGN SYSTEM PRIMITIVES - Professional Academic Edition
  * Standardized design tokens & components for QuantumLearning UI/UX Architecture
  */
 
-// Spacing Scale: 8px (0.5rem), 12px (0.75rem), 16px (1rem), 24px (1.5rem), 32px (2rem), 48px (3rem)
-
-export function QuantumPage({ children, env = 'learn', maxWidth = 1200, className = '', style = {} }) {
-  // Environmental visual identities
-  const envStyles = {
-    learn: { bg: 'var(--bg-primary)' },
-    lab: { bg: 'linear-gradient(180deg, #07090E 0%, #05060A 100%)' },
-    experiments: { bg: 'linear-gradient(180deg, #06080F 0%, #070B14 100%)' },
-    algorithms: { bg: 'linear-gradient(180deg, #070810 0%, #05060C 100%)' },
-    aitutor: { bg: 'linear-gradient(180deg, #06070C 0%, #05060A 100%)' },
-  };
-
-  const currentEnv = envStyles[env] || envStyles.learn;
-
+export function QuantumPage({ children, env = 'learn', maxWidth = 1240, className = '', style = {} }) {
   return (
     <div 
       className={`quantum-page ${className}`} 
@@ -28,7 +15,7 @@ export function QuantumPage({ children, env = 'learn', maxWidth = 1200, classNam
         height: '100%',
         width: '100%',
         overflowY: 'auto',
-        background: currentEnv.bg,
+        background: 'transparent',
         boxSizing: 'border-box',
         ...style
       }}
@@ -64,28 +51,28 @@ export function QuantumHeader({ title, subtitle, category, actions, breadcrumb }
         gap: '16px'
       }}
     >
-      <div style={{ maxWidth: '750px' }}>
+      <div style={{ maxWidth: '800px' }}>
         {breadcrumb && (
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px', fontFamily: 'monospace' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
             {breadcrumb}
           </div>
         )}
         {category && (
-          <div style={{ color: 'var(--accent-secondary)', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'monospace' }}>
+          <div style={{ color: 'var(--accent-primary)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>
             {category}
           </div>
         )}
-        <h1 style={{ fontSize: '2.4rem', fontWeight: 700, margin: 0, letterSpacing: '-0.02em', color: 'var(--text-primary)', lineHeight: 1.15 }}>
+        <h1 style={{ fontSize: '2.1rem', fontWeight: 800, margin: 0, letterSpacing: '-0.025em', color: 'var(--text-primary)', lineHeight: 1.2 }}>
           {title}
         </h1>
         {subtitle && (
-          <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', margin: '10px 0 0 0', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
             {subtitle}
           </p>
         )}
       </div>
       {actions && (
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {actions}
         </div>
       )}
@@ -93,17 +80,16 @@ export function QuantumHeader({ title, subtitle, category, actions, breadcrumb }
   );
 }
 
-export function QuantumPanel({ children, title, subtitle, badgeText, badgeVariant = 'cyan', actions, className = '', style = {} }) {
+export function QuantumPanel({ children, title, subtitle, badgeText, badgeVariant = 'blue', actions, className = '', style = {} }) {
   return (
     <div 
       className={`quantum-panel ${className}`}
       style={{
-        backgroundColor: 'rgba(11, 17, 33, 0.75)',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: '#FFFFFF',
         border: '1px solid var(--border-subtle)',
-        borderRadius: '8px',
+        borderRadius: '10px',
         padding: '24px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05)',
+        boxShadow: 'var(--shadow-sm)',
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
@@ -111,10 +97,10 @@ export function QuantumPanel({ children, title, subtitle, badgeText, badgeVarian
       }}
     >
       {(title || badgeText || actions) && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: title ? '1px solid rgba(30, 41, 59, 0.6)' : 'none', paddingBottom: title ? '14px' : '0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: title ? '1px solid var(--border-subtle)' : 'none', paddingBottom: title ? '14px' : '0' }}>
           <div>
-            {title && <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{title}</h3>}
-            {subtitle && <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{subtitle}</p>}
+            {title && <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>{title}</h3>}
+            {subtitle && <p style={{ margin: '3px 0 0 0', fontSize: '0.825rem', color: 'var(--text-muted)' }}>{subtitle}</p>}
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             {badgeText && <QuantumBadge variant={badgeVariant}>{badgeText}</QuantumBadge>}
@@ -133,24 +119,27 @@ export function QuantumCard({ children, onClick, active = false, hoverable = tru
       className={className}
       onClick={onClick}
       style={{
-        backgroundColor: active ? 'rgba(6, 182, 212, 0.12)' : 'var(--bg-panel)',
-        border: active ? '1px solid var(--accent-secondary)' : '1px solid var(--border-subtle)',
+        backgroundColor: active ? '#EFF6FF' : '#FFFFFF',
+        border: active ? '1.5px solid var(--accent-primary)' : '1px solid var(--border-subtle)',
         borderRadius: '8px',
         padding: '20px',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'all 0.2s ease',
+        boxShadow: active ? 'var(--shadow-md)' : 'var(--shadow-xs)',
+        transition: 'all 0.15s ease',
         ...style
       }}
       onMouseEnter={(e) => {
         if (hoverable && onClick) {
           e.currentTarget.style.borderColor = 'var(--border-active)';
           e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-md)';
         }
       }}
       onMouseLeave={(e) => {
         if (hoverable && onClick) {
-          e.currentTarget.style.borderColor = active ? 'var(--accent-secondary)' : 'var(--border-subtle)';
+          e.currentTarget.style.borderColor = active ? 'var(--accent-primary)' : 'var(--border-subtle)';
           e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = active ? 'var(--shadow-md)' : 'var(--shadow-xs)';
         }
       }}
     >
@@ -162,46 +151,51 @@ export function QuantumCard({ children, onClick, active = false, hoverable = tru
 export function QuantumButton({ children, onClick, variant = 'primary', size = 'medium', disabled = false, loading = false, style = {}, type = 'button' }) {
   const sizePadding = {
     small: '6px 12px',
-    medium: '10px 18px',
-    large: '14px 28px'
-  }[size] || '10px 18px';
+    medium: '9px 18px',
+    large: '12px 24px'
+  }[size] || '9px 18px';
 
   const sizeFontSize = {
     small: '0.8rem',
-    medium: '0.9rem',
-    large: '1rem'
-  }[size] || '0.9rem';
+    medium: '0.875rem',
+    large: '0.95rem'
+  }[size] || '0.875rem';
 
   const variants = {
     primary: {
-      bg: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
-      color: '#0b1120',
-      border: 'none',
-      boxShadow: '0 0 15px rgba(6, 182, 212, 0.3)'
+      bg: 'var(--accent-primary)',
+      color: '#FFFFFF',
+      border: '1px solid var(--accent-primary)',
+      boxShadow: 'var(--shadow-xs)',
+      hoverBg: 'var(--accent-primary-hover)'
     },
     secondary: {
-      bg: 'rgba(30, 41, 59, 0.8)',
+      bg: '#FFFFFF',
       color: 'var(--text-primary)',
-      border: '1px solid var(--border-subtle)',
-      boxShadow: 'none'
+      border: '1px solid var(--border-medium)',
+      boxShadow: 'var(--shadow-xs)',
+      hoverBg: 'var(--bg-hover)'
     },
     outline: {
       bg: 'transparent',
-      color: 'var(--accent-secondary)',
-      border: '1px solid var(--accent-secondary)',
-      boxShadow: 'none'
+      color: 'var(--accent-primary)',
+      border: '1px solid var(--accent-primary)',
+      boxShadow: 'none',
+      hoverBg: '#EFF6FF'
     },
     danger: {
-      bg: 'rgba(239, 68, 68, 0.15)',
+      bg: '#FEF2F2',
       color: 'var(--gate-x)',
-      border: '1px solid var(--gate-x)',
-      boxShadow: 'none'
+      border: '1px solid #FECACA',
+      boxShadow: 'none',
+      hoverBg: '#FEE2E2'
     },
     ghost: {
       bg: 'transparent',
-      color: 'var(--text-muted)',
-      border: 'none',
-      boxShadow: 'none'
+      color: 'var(--text-secondary)',
+      border: '1px solid transparent',
+      boxShadow: 'none',
+      hoverBg: 'var(--bg-hover)'
     }
   };
 
@@ -213,18 +207,17 @@ export function QuantumButton({ children, onClick, variant = 'primary', size = '
       onClick={onClick}
       disabled={disabled || loading}
       style={{
-        background: v.bg,
+        backgroundColor: v.bg,
         color: v.color,
         fontWeight: 600,
-        fontFamily: 'monospace',
+        fontFamily: 'var(--font-family)',
         fontSize: sizeFontSize,
-        letterSpacing: '0.05em',
         padding: sizePadding,
         border: v.border,
         borderRadius: '6px',
         cursor: disabled || loading ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-        transition: 'all 0.2s ease',
+        opacity: disabled ? 0.6 : 1,
+        transition: 'all 0.15s ease',
         boxShadow: v.boxShadow,
         display: 'inline-flex',
         alignItems: 'center',
@@ -254,22 +247,23 @@ export function QuantumButton({ children, onClick, variant = 'primary', size = '
 export function QuantumSelect({ options, value, onChange, label, disabled = false, style = {} }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', ...style }}>
-      {label && <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{label}</label>}
+      {label && <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</label>}
       <select
         value={value}
         onChange={onChange}
         disabled={disabled}
         style={{
-          padding: '10px 14px',
-          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          padding: '8px 12px',
+          backgroundColor: '#FFFFFF',
           color: 'var(--text-primary)',
-          border: '1px solid var(--border-subtle)',
+          border: '1px solid var(--border-medium)',
           borderRadius: '6px',
-          fontFamily: 'monospace',
-          fontSize: '0.9rem',
+          fontFamily: 'var(--font-family)',
+          fontSize: '0.875rem',
           cursor: disabled ? 'not-allowed' : 'pointer',
           outline: 'none',
-          transition: 'all 0.2s ease'
+          boxShadow: 'var(--shadow-xs)',
+          transition: 'all 0.15s ease'
         }}
       >
         {options.map((opt) => (
@@ -285,7 +279,7 @@ export function QuantumSelect({ options, value, onChange, label, disabled = fals
 export function QuantumInput({ value, onChange, placeholder, type = 'text', label, error, disabled = false, style = {} }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', ...style }}>
-      {label && <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{label}</label>}
+      {label && <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</label>}
       <input
         type={type}
         value={value}
@@ -293,15 +287,16 @@ export function QuantumInput({ value, onChange, placeholder, type = 'text', labe
         placeholder={placeholder}
         disabled={disabled}
         style={{
-          padding: '10px 14px',
-          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+          padding: '9px 14px',
+          backgroundColor: '#FFFFFF',
           color: 'var(--text-primary)',
-          border: error ? '1px solid var(--gate-x)' : '1px solid var(--border-subtle)',
+          border: error ? '1px solid var(--gate-x)' : '1px solid var(--border-medium)',
           borderRadius: '6px',
-          fontFamily: 'monospace',
-          fontSize: '0.9rem',
+          fontFamily: 'var(--font-family)',
+          fontSize: '0.875rem',
           outline: 'none',
-          transition: 'all 0.2s ease'
+          boxShadow: 'var(--shadow-xs)',
+          transition: 'all 0.15s ease'
         }}
       />
       {error && <span style={{ fontSize: '0.75rem', color: 'var(--gate-x)' }}>{error}</span>}
@@ -309,22 +304,23 @@ export function QuantumInput({ value, onChange, placeholder, type = 'text', labe
   );
 }
 
-export function QuantumBadge({ children, variant = 'cyan' }) {
+export function QuantumBadge({ children, variant = 'blue' }) {
   const colors = {
-    cyan: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06b6d4', border: 'rgba(6, 182, 212, 0.4)' },
-    violet: { bg: 'rgba(139, 92, 246, 0.15)', text: '#a78bfa', border: 'rgba(139, 92, 246, 0.4)' },
-    green: { bg: 'rgba(34, 197, 94, 0.15)', text: '#4ade80', border: 'rgba(34, 197, 94, 0.4)' },
-    amber: { bg: 'rgba(245, 158, 11, 0.15)', text: '#fbbf24', border: 'rgba(245, 158, 11, 0.4)' },
-    red: { bg: 'rgba(239, 68, 68, 0.15)', text: '#f87171', border: 'rgba(239, 68, 68, 0.4)' }
+    blue: { bg: '#EFF6FF', text: '#1D4ED8', border: '#BFDBFE' },
+    cyan: { bg: '#F0F9FF', text: '#0369A1', border: '#BAE6FD' },
+    violet: { bg: '#F5F3FF', text: '#6D28D9', border: '#DDD6FE' },
+    green: { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0' },
+    amber: { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
+    red: { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' }
   };
-  const c = colors[variant] || colors.cyan;
+  const c = colors[variant] || colors.blue;
 
   return (
     <span style={{
-      fontSize: '0.75rem',
-      fontWeight: 600,
-      fontFamily: 'monospace',
-      letterSpacing: '0.05em',
+      fontSize: '0.725rem',
+      fontWeight: 700,
+      fontFamily: 'var(--font-mono)',
+      letterSpacing: '0.04em',
       padding: '3px 8px',
       borderRadius: '4px',
       background: c.bg,
@@ -342,7 +338,7 @@ export function QuantumBadge({ children, variant = 'cyan' }) {
 
 export function QuantumTabs({ tabs, activeTab, onChangeTab }) {
   return (
-    <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '24px' }}>
+    <div style={{ display: 'flex', gap: '2px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '20px' }}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -350,17 +346,15 @@ export function QuantumTabs({ tabs, activeTab, onChangeTab }) {
             key={tab.id}
             onClick={() => onChangeTab(tab.id)}
             style={{
-              padding: '12px 20px',
+              padding: '10px 18px',
               backgroundColor: 'transparent',
               border: 'none',
-              borderBottom: isActive ? '2px solid var(--accent-secondary)' : '2px solid transparent',
-              color: isActive ? 'var(--accent-secondary)' : 'var(--text-muted)',
+              borderBottom: isActive ? '2px solid var(--accent-primary)' : '2px solid transparent',
+              color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
               fontWeight: 600,
-              fontSize: '0.85rem',
-              fontFamily: 'monospace',
+              fontSize: '0.875rem',
               cursor: 'pointer',
-              letterSpacing: '0.05em',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.15s ease'
             }}
           >
             {tab.label}
@@ -377,9 +371,10 @@ export function QuantumEmptyState({ title = 'No Data Recorded', description, act
       style={{ 
         padding: '48px 24px', 
         textAlign: 'center', 
-        backgroundColor: 'var(--bg-panel)', 
+        backgroundColor: '#FFFFFF', 
         borderRadius: '8px', 
         border: '1px solid var(--border-subtle)',
+        boxShadow: 'var(--shadow-xs)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -387,15 +382,15 @@ export function QuantumEmptyState({ title = 'No Data Recorded', description, act
         gap: '16px'
       }}
     >
-      <div style={{ fontSize: '2.5rem', opacity: 0.7 }}>
+      <div style={{ fontSize: '2.5rem', opacity: 0.8 }}>
         {icon || '🔬'}
       </div>
       <div style={{ maxWidth: '480px' }}>
-        <h4 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', margin: '0 0 8px 0', fontWeight: 600 }}>
+        <h4 style={{ fontSize: '1.15rem', color: 'var(--text-primary)', margin: '0 0 6px 0', fontWeight: 700 }}>
           {title}
         </h4>
         {description && (
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
             {description}
           </p>
         )}
@@ -411,18 +406,18 @@ export function QuantumEmptyState({ title = 'No Data Recorded', description, act
 
 export function QuantumLoadingState({ message = 'Executing Quantum Computations...' }) {
   return (
-    <div style={{ padding: '64px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', color: 'var(--text-muted)' }}>
+    <div style={{ padding: '48px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', color: 'var(--text-secondary)' }}>
       <div 
         style={{ 
           width: '32px', 
           height: '32px', 
-          border: '3px solid var(--accent-secondary)', 
+          border: '3px solid var(--accent-primary)', 
           borderTopColor: 'transparent', 
           borderRadius: '50%', 
-          animation: 'spin 1s linear infinite' 
+          animation: 'spin 0.8s linear infinite' 
         }} 
       />
-      <span style={{ fontSize: '0.95rem', fontFamily: 'monospace', letterSpacing: '0.05em' }}>{message}</span>
+      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{message}</span>
     </div>
   );
 }
@@ -431,21 +426,21 @@ export function QuantumErrorState({ title = 'Quantum Execution Error', message, 
   return (
     <div 
       style={{ 
-        padding: '32px', 
-        backgroundColor: 'rgba(239, 68, 68, 0.08)', 
+        padding: '24px', 
+        backgroundColor: '#FEF2F2', 
         borderRadius: '8px', 
-        border: '1px solid var(--gate-x)', 
+        border: '1px solid #FECACA', 
         color: 'var(--text-primary)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px'
+        gap: '12px'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <span style={{ fontSize: '1.5rem', color: 'var(--gate-x)' }}>⚠️</span>
-        <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--gate-x)', fontWeight: 600 }}>{title}</h4>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ fontSize: '1.3rem', color: 'var(--gate-x)' }}>⚠️</span>
+        <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--gate-x)', fontWeight: 700 }}>{title}</h4>
       </div>
-      <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+      <p style={{ margin: 0, color: '#991B1B', fontSize: '0.9rem', lineHeight: 1.5 }}>
         {message}
       </p>
       {onRetry && (
@@ -459,12 +454,12 @@ export function QuantumErrorState({ title = 'Quantum Execution Error', message, 
   );
 }
 
-export function QuantumMetric({ label, value, unit = '', color = 'var(--accent-secondary)' }) {
+export function QuantumMetric({ label, value, unit = '', color = 'var(--accent-primary)' }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', backgroundColor: 'var(--bg-primary)', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
-      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'monospace' }}>{label}</span>
-      <span style={{ fontSize: '1.6rem', fontWeight: 700, color: color, fontFamily: 'monospace', marginTop: '4px' }}>
-        {value !== undefined && value !== null ? value : 'N/A'}{unit && <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginLeft: '4px' }}>{unit}</span>}
+    <div style={{ display: 'flex', flexDirection: 'column', padding: '14px 16px', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+      <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{label}</span>
+      <span style={{ fontSize: '1.4rem', fontWeight: 700, color: color, fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
+        {value !== undefined && value !== null ? value : 'N/A'}{unit && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '3px' }}>{unit}</span>}
       </span>
     </div>
   );
@@ -473,8 +468,8 @@ export function QuantumMetric({ label, value, unit = '', color = 'var(--accent-s
 export function QuantumStatusIndicator({ status = 'ready', label = 'SYSTEM OPERATIONAL' }) {
   const isOk = status === 'ready' || status === 'operational';
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'monospace', fontSize: '0.75rem', color: isOk ? '#4ade80' : '#f87171' }}>
-      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: isOk ? '#22c55e' : '#ef4444', boxShadow: `0 0 8px ${isOk ? '#22c55e' : '#ef4444'}` }} />
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 600, color: isOk ? '#15803D' : '#B91C1C' }}>
+      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: isOk ? '#22C55E' : '#EF4444' }} />
       <span>{label}</span>
     </div>
   );

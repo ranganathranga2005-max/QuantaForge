@@ -18,22 +18,23 @@ export default function RightInspector({
     <div style={{
       width: '280px',
       flexShrink: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.8)',
+      backgroundColor: '#FFFFFF',
       borderLeft: '1px solid var(--border-subtle)',
-      padding: '16px',
+      padding: '20px 16px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '20px',
+      gap: '18px',
       overflowY: 'auto',
-      userSelect: 'none'
+      userSelect: 'none',
+      boxShadow: 'var(--shadow-xs)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{
           fontSize: '0.75rem',
           fontWeight: 700,
-          letterSpacing: '0.1em',
+          letterSpacing: '0.08em',
           color: 'var(--text-muted)',
-          fontFamily: 'monospace',
+          fontFamily: 'var(--font-mono)',
           textTransform: 'uppercase'
         }}>
           {selectedGate ? 'GATE INSPECTOR' : 'CIRCUIT OVERVIEW'}
@@ -47,10 +48,11 @@ export default function RightInspector({
               color: 'var(--text-muted)',
               cursor: 'pointer',
               fontSize: '0.8rem',
-              fontFamily: 'monospace'
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 600
             }}
           >
-            ✕ Close
+            ✕ Deselect
           </button>
         )}
       </div>
@@ -60,17 +62,17 @@ export default function RightInspector({
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
-            padding: '16px',
-            backgroundColor: 'rgba(5, 5, 15, 0.6)',
-            border: '1px solid var(--border-active)',
+            gap: '14px',
+            padding: '14px',
+            backgroundColor: '#F8FAFC',
+            border: '1.5px solid var(--accent-primary)',
             borderRadius: '8px'
           }}>
             <div style={{
-              fontSize: '1.8rem',
+              fontSize: '1.6rem',
               fontWeight: 800,
-              fontFamily: 'monospace',
-              color: 'var(--accent-secondary)'
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--accent-primary)'
             }}>
               {selectedGate.gate}
             </div>
@@ -87,35 +89,35 @@ export default function RightInspector({
                  selectedGate.gate === 'Reset' ? 'Reset Gate' :
                  selectedGate.gate === 'IF' ? 'Conditional Gate' : `${selectedGate.gate} Gate`}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                Column: {selectedGate.col}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                Wire Column: {selectedGate.col}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>TYPE</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 600, fontFamily: 'monospace' }}>
-                {['CNOT', 'CZ', 'SWAP'].includes(selectedGate.gate) ? '2-Qubit Controlled' :
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.825rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>TYPE</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                {['CNOT', 'CZ', 'SWAP'].includes(selectedGate.gate) ? '2-Qubit Entangler' :
                  selectedGate.gate === 'M' ? 'Measurement' :
-                 ['RX', 'RY', 'RZ'].includes(selectedGate.gate) ? 'Parameterized Single-Qubit' : 'Single-Qubit'}
+                 ['RX', 'RY', 'RZ'].includes(selectedGate.gate) ? 'Parameterized Single-Q' : 'Single-Qubit Gate'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>TARGET</span>
-              <span style={{ color: 'var(--accent-secondary)', fontWeight: 700, fontFamily: 'monospace' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>TARGET</span>
+              <span style={{ color: 'var(--accent-primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                 {selectedGate.control !== undefined ? `Ctrl: q${selectedGate.control}, Tgt: q${selectedGate.target}` :
-                 selectedGate.qubit !== undefined ? `q${selectedGate.qubit}` :
+                 selectedGate.qubit !== undefined ? `Lane q${selectedGate.qubit}` :
                  selectedGate.cbit !== undefined ? `c${selectedGate.cbit} → q${selectedGate.targetQubit}` : 'N/A'}
               </span>
             </div>
 
             {['RX', 'RY', 'RZ'].includes(selectedGate.gate) && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '8px' }}>
-                <label style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontFamily: 'monospace' }}>
-                  PARAMETER (θ radians):
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '6px' }}>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                  ROTATION ANGLE (θ rad):
                 </label>
                 <input
                   type="number"
@@ -123,13 +125,13 @@ export default function RightInspector({
                   value={selectedGate.parameters?.theta ?? 0.785}
                   onChange={(e) => onUpdateGateParam && onUpdateGateParam(selectedGate.id, parseFloat(e.target.value))}
                   style={{
-                    backgroundColor: 'rgba(5, 5, 15, 0.8)',
-                    border: '1px solid var(--border-active)',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid var(--border-medium)',
                     color: 'var(--text-primary)',
-                    padding: '8px 12px',
+                    padding: '6px 10px',
                     borderRadius: '6px',
-                    fontFamily: 'monospace',
-                    fontSize: '0.9rem'
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.85rem'
                   }}
                 />
               </div>
@@ -139,66 +141,66 @@ export default function RightInspector({
           <button
             onClick={() => onDeleteSelectedGate && onDeleteSelectedGate(selectedGate.id)}
             style={{
-              marginTop: '16px',
-              padding: '10px',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              color: '#f87171',
+              marginTop: '12px',
+              padding: '8px',
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FECACA',
+              color: 'var(--gate-x)',
               borderRadius: '6px',
               fontWeight: 700,
-              fontFamily: 'monospace',
-              fontSize: '0.85rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.8rem',
               cursor: 'pointer'
             }}
           >
-            🗑 DELETE GATE
+            🗑 REMOVE GATE
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.85rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: 'rgba(5,5,15,0.4)', borderRadius: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>Qubits</span>
-              <span style={{ color: 'var(--accent-secondary)', fontWeight: 700, fontFamily: 'monospace' }}>{numQubits} Qubits</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.825rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Qubit Count</span>
+              <span style={{ color: 'var(--accent-primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{numQubits} Lanes</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: 'rgba(5,5,15,0.4)', borderRadius: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>Operations</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontFamily: 'monospace' }}>{operationsCount} Gates</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Operations</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{operationsCount} Gates</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: 'rgba(5,5,15,0.4)', borderRadius: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>Measurements</span>
-              <span style={{ color: '#f59e0b', fontWeight: 700, fontFamily: 'monospace' }}>{measurementCount} M</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Measurements</span>
+              <span style={{ color: '#D97706', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{measurementCount} M</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: 'rgba(5,5,15,0.4)', borderRadius: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>Active Backend</span>
-              <span style={{ color: 'var(--accent-primary)', fontWeight: 700, fontFamily: 'monospace' }}>{selectedBackend}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '6px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Backend</span>
+              <span style={{ color: 'var(--accent-primary)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{selectedBackend}</span>
             </div>
           </div>
 
           <div style={{
-            padding: '14px',
-            backgroundColor: isStale ? 'rgba(255, 200, 0, 0.08)' : simResult ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${isStale ? 'rgba(255, 200, 0, 0.3)' : simResult ? 'rgba(16, 185, 129, 0.3)' : 'var(--border-subtle)'}`,
-            borderRadius: '8px',
+            padding: '12px',
+            backgroundColor: isStale ? '#FFFBEB' : simResult ? '#F0FDF4' : '#F8FAFC',
+            border: `1px solid ${isStale ? '#FDE68A' : simResult ? '#BBF7D0' : 'var(--border-subtle)'}`,
+            borderRadius: '6px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '6px'
+            gap: '4px'
           }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'monospace', textTransform: 'uppercase' }}>
-              EXECUTION STATUS
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+              SIMULATION ENGINE STATUS
             </div>
             <div style={{
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
               fontWeight: 700,
-              fontFamily: 'monospace',
-              color: isStale ? 'rgba(255, 200, 0, 0.9)' : simResult ? '#10b981' : 'var(--text-muted)'
+              fontFamily: 'var(--font-mono)',
+              color: isStale ? '#B45309' : simResult ? '#15803D' : 'var(--text-secondary)'
             }}>
               {isStale ? '⚡ STALE (Circuit modified)' : simResult ? '✓ SIMULATED' : '○ IDLE (Ready)'}
             </div>
           </div>
 
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace', lineHeight: '1.4', marginTop: '10px' }}>
-            Click any gate on the circuit wires to inspect, adjust parameters, or delete.
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', lineHeight: 1.4, marginTop: '6px' }}>
+            Click any placed gate on the circuit wires to inspect, configure angles, or delete.
           </div>
         </div>
       )}

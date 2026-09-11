@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { QuantumPage, QuantumHeader, QuantumPanel, QuantumMetric, QuantumBadge, QuantumButton, QuantumSelect, QuantumInput, QuantumEmptyState, QuantumLoadingState, QuantumErrorState, QuantumTabs } from '../components/ui/QuantumPrimitives';
+import QkdSimulator from '../components/experiments/QkdSimulator';
+import SurfaceCodeVisualizer from '../components/experiments/SurfaceCodeVisualizer';
+import QuantumTeleportationStudio from '../components/experiments/QuantumTeleportationStudio';
+import QuantumAdvantageExplorer from '../components/experiments/QuantumAdvantageExplorer';
 
 export default function Experiments() {
-  const [activeTab, setActiveTab] = useState('sweep');
+  const [activeTab, setActiveTab] = useState('qkd');
   const [backends, setBackends] = useState([]);
   const [selectedBackend, setSelectedBackend] = useState('custom_m1');
   const [loading, setLoading] = useState(false);
@@ -163,10 +167,14 @@ export default function Experiments() {
 
       <QuantumTabs
         tabs={[
-          { id: 'sweep', label: '1. PARAMETER SWEEPS' },
-          { id: 'vqe', label: '2. VQE SOLVER' },
-          { id: 'qec', label: '3. 3-QUBIT QEC' },
-          { id: 'rb', label: '4. RANDOMIZED BENCHMARKING' }
+          { id: 'qkd', label: '1. QKD NETWORK (BB84/E91)' },
+          { id: 'surface_code', label: '2. 2D SURFACE CODE QEC' },
+          { id: 'teleportation', label: '3. QUANTUM TELEPORTATION' },
+          { id: 'advantage', label: '4. QUANTUM ADVANTAGE' },
+          { id: 'sweep', label: '5. PARAMETER SWEEPS' },
+          { id: 'vqe', label: '6. VQE SOLVER' },
+          { id: 'qec', label: '7. 3-QUBIT QEC' },
+          { id: 'rb', label: '8. BENCHMARKING' }
         ]}
         activeTab={activeTab}
         onChangeTab={setActiveTab}
@@ -180,7 +188,19 @@ export default function Experiments() {
         />
       )}
 
-      {/* TAB 1: PARAMETER SWEEPS */}
+      {/* TAB: QKD Network Simulator */}
+      {activeTab === 'qkd' && <QkdSimulator />}
+
+      {/* TAB: 2D Surface Code Visualizer */}
+      {activeTab === 'surface_code' && <SurfaceCodeVisualizer />}
+
+      {/* TAB: Quantum Teleportation Studio */}
+      {activeTab === 'teleportation' && <QuantumTeleportationStudio />}
+
+      {/* TAB: Computational Advantage Explorer */}
+      {activeTab === 'advantage' && <QuantumAdvantageExplorer />}
+
+      {/* TAB 5: PARAMETER SWEEPS */}
       {activeTab === 'sweep' && (
         <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '24px', alignItems: 'start' }}>
           <QuantumPanel title="Sweep Configuration">

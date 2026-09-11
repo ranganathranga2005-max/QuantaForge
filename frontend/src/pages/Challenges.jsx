@@ -19,12 +19,17 @@ export default function Challenges() {
         const curriculum = await fetchCurriculum();
         const extracted = [];
         
-        if (curriculum?.modules) {
-          curriculum.modules.forEach(mod => {
-            (mod.lessons || []).forEach(les => {
-              if (les.circuit_challenge) {
+        const mods = Array.isArray(curriculum) ? curriculum : (curriculum?.modules || []);
+        mods.forEach(mod => {
+          (mod.lessons || []).forEach(les => {
+            (les.exercises || []).forEach(ex => {
+              if (ex.type === 'circuit_challenge') {
                 extracted.push({
-                  ...les.circuit_challenge,
+                  id: ex.id,
+                  question: ex.question,
+                  difficulty: ex.difficulty,
+                  preset_gates: ex.preset_gates || [],
+                  target_behavior: ex.target_behavior || {},
                   lesson_title: les.title,
                   module_title: mod.title,
                   module_id: mod.id,
@@ -33,7 +38,7 @@ export default function Challenges() {
               }
             });
           });
-        }
+        });
 
         // Fallback default challenges if curriculum challenges are empty
         if (extracted.length === 0) {

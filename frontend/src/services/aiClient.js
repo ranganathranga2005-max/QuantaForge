@@ -1,12 +1,34 @@
 /**
  * Universal Frontend AI Client for QuantumLearning.
  * Centralized interface for sending context-aware queries and validating AI actions across all platform pages.
+ * Supports multi-turn conversation history for the chatbot.
  */
 import { post } from './api';
 
-export async function queryAI({ question, taskType = 'chat', context = null, providerOverride = null }) {
+/**
+ * Send a query to the AI tutor, optionally including prior conversation turns.
+ * @param {Object} opts
+ * @param {string} opts.question - Current user message
+ * @param {string} opts.taskType - 'chat' | 'explain_concept' | etc.
+ * @param {Object|null} opts.context - AIContextEnvelope payload
+ * @param {string|null} opts.providerOverride - 'mock' to force mock provider
+ * @param {Array} opts.history - [{role:'user'|'ai', text:string}] prior turns
+ */
+export async function queryAI({ question, taskType = 'chat', context = null, providerOverride = null, history = [] }) {
+  // Build a conversation-aware question by prepending recent turns as context
+  let fullQuestion = question || '';
+  if (history && history.length > 0) {
+    // Include last 6 turns (3 pairs) for conversation context
+    const recentTurns = history.slice(-6);
+    const historyText = recentTurns
+      .filter(m => m.role === 'user' || m.role === 'ai')
+      .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.text}`)
+      .join('\n');
+    fullQuestion = `[Conversation History]\n${historyText}\n\n[Current Question]\n${question}`;
+  }
+
   const payload = {
-    question: question || '',
+    question: fullQuestion,
     user_question: question || '',
     task_type: taskType,
     context: context || {},

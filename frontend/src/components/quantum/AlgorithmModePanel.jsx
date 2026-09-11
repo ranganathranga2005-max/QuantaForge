@@ -80,21 +80,22 @@ export default function AlgorithmModePanel({
       display: 'flex',
       gap: '24px',
       padding: '24px',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+      backgroundColor: '#FFFFFF',
       border: '1px solid var(--border-subtle)',
-      borderRadius: '12px',
-      minHeight: '400px'
+      borderRadius: '10px',
+      minHeight: '400px',
+      boxShadow: 'var(--shadow-xs)'
     }}>
       {/* Category & Algorithm Selector Column */}
       <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '16px', borderRight: '1px solid var(--border-subtle)', paddingRight: '20px' }}>
-        <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
           ALGORITHM REGISTRY
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', overflowY: 'auto', maxHeight: '450px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', maxHeight: '480px' }}>
           {ALGORITHM_CATEGORIES.map(cat => (
-            <div key={cat.category} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent-secondary)', fontFamily: 'monospace' }}>
+            <div key={cat.category} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 {cat.category}
               </div>
               {cat.algos.map(algo => {
@@ -105,17 +106,17 @@ export default function AlgorithmModePanel({
                     onClick={() => setSelectedAlgoId(algo.id)}
                     style={{
                       padding: '10px 12px',
-                      backgroundColor: isSelected ? 'rgba(6, 182, 212, 0.15)' : 'rgba(30, 41, 59, 0.4)',
-                      border: isSelected ? '1px solid var(--accent-secondary)' : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? '#EFF6FF' : '#F8FAFC',
+                      border: isSelected ? '1.5px solid var(--accent-primary)' : '1px solid var(--border-subtle)',
                       borderRadius: '6px',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isSelected ? 'var(--accent-secondary)' : 'var(--text-primary)', fontFamily: 'monospace' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: isSelected ? 'var(--accent-primary)' : 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
                       {algo.name}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {algo.desc}
                     </div>
                   </div>
@@ -128,168 +129,100 @@ export default function AlgorithmModePanel({
 
       {/* Selected Algorithm Parameters & Actions */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div style={{ padding: '20px', backgroundColor: 'rgba(5, 5, 15, 0.6)', border: '1px solid var(--border-active)', borderRadius: '8px' }}>
+        <div style={{ padding: '18px 20px', backgroundColor: '#F8FAFC', border: '1px solid var(--border-subtle)', borderRadius: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ margin: 0, color: 'var(--accent-secondary)', fontFamily: 'monospace', fontSize: '1.2rem' }}>
+            <h3 style={{ margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '1.15rem', fontWeight: 800 }}>
               {activeAlgo?.name}
             </h3>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', padding: '4px 10px', backgroundColor: 'rgba(6,182,212,0.1)', border: '1px solid var(--border-subtle)', borderRadius: '4px', color: 'var(--accent-primary)' }}>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', padding: '3px 8px', backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '4px', color: 'var(--accent-primary)', fontWeight: 600 }}>
               Backend: {selectedBackend}
             </span>
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '8px', lineHeight: '1.5' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '6px', margin: 0, lineHeight: 1.5 }}>
             {activeAlgo?.desc}
           </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
             INPUT / ORACLE PARAMETERS
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px' }}>
             {selectedAlgoId === 'bernstein_vazirani' && (
               <div>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>HIDDEN BITSTRING (s):</label>
+                <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>HIDDEN BITSTRING (s):</label>
                 <input
                   type="text"
                   value={params.hidden_string}
                   onChange={e => handleParamChange('hidden_string', e.target.value)}
-                  style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
+                  style={{ width: '100%', marginTop: '4px', padding: '8px 12px', background: '#FFFFFF', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', borderRadius: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
                 />
               </div>
             )}
 
             {selectedAlgoId === 'deutsch_jozsa' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>ORACLE TYPE:</label>
-                  <select
-                    value={params.oracle_type}
-                    onChange={e => handleParamChange('oracle_type', e.target.value)}
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  >
-                    <option value="constant">Constant (returns 0 or 1)</option>
-                    <option value="balanced">Balanced (returns 0 for half, 1 for half)</option>
-                  </select>
-                </div>
-              </>
+              <div>
+                <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>ORACLE TYPE:</label>
+                <select
+                  value={params.oracle_type}
+                  onChange={e => handleParamChange('oracle_type', e.target.value)}
+                  style={{ width: '100%', marginTop: '4px', padding: '8px 12px', background: '#FFFFFF', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', borderRadius: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                >
+                  <option value="constant">Constant f(x) = 0</option>
+                  <option value="balanced">Balanced f(x) = x₀ ⊕ x₁</option>
+                </select>
+              </div>
             )}
 
             {selectedAlgoId === 'grover' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>MARKED TARGET STATE:</label>
-                  <input
-                    type="text"
-                    value={params.marked_state}
-                    onChange={e => handleParamChange('marked_state', e.target.value)}
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  />
-                </div>
-              </>
-            )}
-
-            {selectedAlgoId === 'qft' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>QUBITS (n):</label>
-                  <select
-                    value={params.num_qubits}
-                    onChange={e => handleParamChange('num_qubits', parseInt(e.target.value, 10))}
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  >
-                    <option value={2}>2 Qubits</option>
-                    <option value={3}>3 Qubits</option>
-                    <option value={4}>4 Qubits</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {selectedAlgoId === 'vqe' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>ANSATZ TYPE:</label>
-                  <select
-                    value={params.ansatz_type}
-                    onChange={e => handleParamChange('ansatz_type', e.target.value)}
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  >
-                    <option value="hardware_efficient">Hardware-Efficient (Ry + CNOT)</option>
-                    <option value="uccsd">UCCSD-inspired</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {selectedAlgoId === 'qec' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>INITIAL LOGICAL BIT:</label>
-                  <select
-                    value={params.initial_state_bit}
-                    onChange={e => handleParamChange('initial_state_bit', parseInt(e.target.value, 10))}
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  >
-                    <option value={0}>Logical |0_L⟩</option>
-                    <option value={1}>Logical |1_L⟩</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {selectedAlgoId === 'shor' && (
-              <>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>NUMBER TO FACTOR (N):</label>
-                  <input
-                    type="number"
-                    value={params.N}
-                    readOnly
-                    style={{ width: '100%', marginTop: '6px', padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
-                  />
-                </div>
-              </>
+              <div>
+                <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>TARGET MARKED STATE:</label>
+                <input
+                  type="text"
+                  value={params.marked_state}
+                  onChange={e => handleParamChange('marked_state', e.target.value)}
+                  style={{ width: '100%', marginTop: '4px', padding: '8px 12px', background: '#FFFFFF', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', borderRadius: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                />
+              </div>
             )}
           </div>
         </div>
 
-        <div style={{ marginTop: 'auto', display: 'flex', gap: '16px', justifyContent: 'flex-end', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+        <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
           <button
-            onClick={() => onBuildAlgorithmCircuit(selectedAlgoId, params)}
+            onClick={() => onBuildAlgorithmCircuit && onBuildAlgorithmCircuit(selectedAlgoId, params)}
             style={{
-              padding: '12px 20px',
-              backgroundColor: 'rgba(6, 182, 212, 0.12)',
-              border: '1px solid var(--accent-secondary)',
-              color: 'var(--accent-secondary)',
-              borderRadius: '8px',
+              padding: '10px 20px',
+              backgroundColor: '#FFFFFF',
+              color: 'var(--accent-primary)',
+              border: '1.5px solid var(--accent-primary)',
+              borderRadius: '6px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.85rem',
               fontWeight: 700,
-              fontFamily: 'monospace',
-              fontSize: '0.9rem',
               cursor: 'pointer'
             }}
           >
-            ⚡ BUILD CIRCUIT IN WORKSPACE
+            📋 LOAD ONTO CIRCUIT WIRES
           </button>
-
           <button
-            onClick={() => onRunAlgorithmSimulation(selectedAlgoId, params)}
+            onClick={() => onRunAlgorithmSimulation && onRunAlgorithmSimulation(selectedAlgoId, params)}
             disabled={isLoading}
             style={{
-              padding: '12px 28px',
+              padding: '10px 24px',
               backgroundColor: 'var(--accent-primary)',
-              color: '#0b1120',
+              color: '#FFFFFF',
               border: 'none',
-              borderRadius: '8px',
-              fontWeight: 800,
-              fontFamily: 'monospace',
-              fontSize: '0.95rem',
+              borderRadius: '6px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
               cursor: 'pointer',
-              boxShadow: '0 0 15px rgba(6, 182, 212, 0.4)'
+              boxShadow: 'var(--shadow-xs)'
             }}
           >
-            {isLoading ? 'EXECUTING ALGORITHM...' : '▶ RUN ALGORITHM'}
+            {isLoading ? 'EXECUTING...' : '▶ DIRECT EXECUTE & SIMULATE'}
           </button>
         </div>
       </div>

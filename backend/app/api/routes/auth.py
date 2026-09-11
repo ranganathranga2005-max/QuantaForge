@@ -9,7 +9,7 @@ from app.auth.models import (
 )
 from app.auth.store import student_store
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 def _get_current_student(authorization: Optional[str] = Header(None)):

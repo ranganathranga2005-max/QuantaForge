@@ -23,7 +23,16 @@ export async function request(url, options = {}) {
     }
 
     if (!res.ok) {
-      const errorMsg = data.detail?.message || data.detail || data.message || `Request failed with status ${res.status}`;
+      let errorMsg = `Request failed with status ${res.status}`;
+      if (typeof data.detail === 'string') {
+        errorMsg = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        errorMsg = data.detail.map(d => (typeof d === 'object' ? (d.msg || JSON.stringify(d)) : String(d))).join('; ');
+      } else if (data.detail && typeof data.detail === 'object') {
+        errorMsg = data.detail.message || JSON.stringify(data.detail);
+      } else if (data.message) {
+        errorMsg = typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
+      }
       const err = new Error(errorMsg);
       err.status = res.status;
       err.data = data;

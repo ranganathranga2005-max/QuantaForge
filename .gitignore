@@ -20,6 +20,10 @@ __pycache__/
 .env.local
 .env.*.local
 
+# User data — never commit real student accounts or learning progress
+backend/data/students.json
+backend/app/learning/store_data.json
+
 # Build outputs
 frontend/dist/
 frontend/dist-ssr/

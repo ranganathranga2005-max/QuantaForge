@@ -88,17 +88,32 @@ function renderFrame(ctx, svBefore, svAfter, numQubits, t, step, isMeasCollapse,
 
   ctx.clearRect(0, 0, W, H);
 
-  // Dark background
-  ctx.fillStyle = 'rgba(5, 5, 15, 0.95)';
+  // Clean light canvas background
+  ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, W, H);
 
   if (numStates === 0) return;
 
-  const padding = { left: 60, right: 20, top: 20, bottom: 50 };
+  const padding = { left: 60, right: 20, top: 30, bottom: 50 };
   const plotW = W - padding.left - padding.right;
   const plotH = H - padding.top - padding.bottom;
 
-  const barW = Math.min(plotW / numStates - 4, 80);
+  // Y-axis grid lines & labels (drawn behind bars)
+  ctx.strokeStyle = '#E2E8F0';
+  ctx.lineWidth = 1;
+  for (let p = 0; p <= 1; p += 0.25) {
+    const gy = padding.top + plotH * (1 - p);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, gy);
+    ctx.lineTo(W - padding.right, gy);
+    ctx.stroke();
+    ctx.fillStyle = '#64748B';
+    ctx.font = '500 10px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${(p * 100).toFixed(0)}%`, padding.left - 6, gy + 3);
+  }
+
+  const barW = Math.min(plotW / numStates - 6, 80);
   const barSpacing = plotW / numStates;
 
   for (let i = 0; i < numStates; i++) {
@@ -110,17 +125,13 @@ function renderFrame(ctx, svBefore, svAfter, numQubits, t, step, isMeasCollapse,
     let displayProb, displayPhase, alpha;
 
     if (isMeasCollapse) {
-      // Measurement collapse: non-surviving states fade to zero
-      // Target is derived from step.measurement_result — never hardcoded
       const isSurvivor = collapseTarget === i;
       if (isSurvivor) {
-        // Surviving state: grow from pre-measurement probability to 1.0
         displayProb = t < 0.4 ? probB :
                       t < 0.7 ? lerp(probB, 1.0, (t - 0.4) / 0.3) :
                       lerp(1.0, 1.0, 1.0);
         alpha = 1.0;
       } else {
-        // Non-surviving states fade to zero
         displayProb = t < 0.4 ? probB :
                       t < 0.7 ? lerp(probB, 0, (t - 0.4) / 0.3) : 0;
         alpha = t < 0.4 ? 1.0 :
@@ -128,8 +139,6 @@ function renderFrame(ctx, svBefore, svAfter, numQubits, t, step, isMeasCollapse,
       }
       displayPhase = phB;
     } else {
-      // Normal gate transition: interpolate between before and after
-      // VISUAL INTERPOLATION: these are graphics frames, not quantum states
       displayProb = lerp(probB, probA, t);
       displayPhase = lerpAngle(phB, phA, t);
       alpha = 1.0;
@@ -139,36 +148,32 @@ function renderFrame(ctx, svBefore, svAfter, numQubits, t, step, isMeasCollapse,
     const x = padding.left + i * barSpacing + (barSpacing - barW) / 2;
     const y = padding.top + plotH - barH;
 
-    // Phase-based color (visual mapping from actual phase data)
+    // Phase-based color mapping for light theme
     const hue = phaseToHue(displayPhase);
-    const saturation = 70 + displayProb * 30;
-    const lightness = 40 + displayProb * 25;
+    const saturation = 75;
+    const lightness = 48;
 
-    // Glow effect scaled by probability
-    if (displayProb > 0.01) {
-      ctx.shadowColor = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.6)`;
-      ctx.shadowBlur = 8 + displayProb * 12;
-    } else {
-      ctx.shadowBlur = 0;
-    }
-
-    // Bar fill
+    // Bar fill with light gradient
     const grad = ctx.createLinearGradient(x, y, x, y + barH);
-    grad.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness + 10}%, ${alpha})`);
-    grad.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness - 10}%, ${alpha * 0.7})`);
+    grad.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`);
+    grad.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness + 12}%, ${alpha * 0.85})`);
     ctx.fillStyle = grad;
-    ctx.fillRect(x, y, barW, barH);
+    
+    // Rounded bar top
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]) : ctx.rect(x, y, barW, barH);
+    ctx.fill();
 
-    // QUANTUM AMPLITUDE WAVE FIELD: Render complex phase wave curve for basis state
+    // QUANTUM AMPLITUDE WAVE FIELD: Render phase wave
     if (displayProb > 0.005) {
-      ctx.strokeStyle = `hsla(${hue}, 100%, 75%, ${alpha * 0.8})`;
+      ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       const points = 16;
       for (let pt = 0; pt <= points; pt++) {
         const px = x + (pt / points) * barW;
         const phaseOffset = displayPhase + (pt / points) * Math.PI * 2;
-        const waveAmp = (Math.sqrt(displayProb) * barH * 0.25);
+        const waveAmp = (Math.sqrt(displayProb) * barH * 0.22);
         const py = (y + barH / 2) + Math.sin(phaseOffset) * waveAmp;
         if (pt === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
@@ -176,43 +181,26 @@ function renderFrame(ctx, svBefore, svAfter, numQubits, t, step, isMeasCollapse,
       ctx.stroke();
     }
 
-    ctx.shadowBlur = 0;
-
-    // Basis state label: computed from index, never hardcoded
+    // Basis state label: dark slate font
     const basisLabel = `|${i.toString(2).padStart(numQubits, '0')}⟩`;
-    ctx.fillStyle = `rgba(180, 200, 255, ${alpha})`;
-    ctx.font = `${Math.max(9, Math.min(12, barSpacing - 4))}px monospace`;
+    ctx.fillStyle = `rgba(15, 23, 42, ${alpha})`;
+    ctx.font = `600 ${Math.max(10, Math.min(13, barSpacing - 4))}px monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText(basisLabel, x + barW / 2, padding.top + plotH + 18);
+    ctx.fillText(basisLabel, x + barW / 2, padding.top + plotH + 20);
 
     // Probability percentage
-    if (displayProb > 0.02) {
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
-      ctx.font = '10px monospace';
-      ctx.fillText(`${(displayProb * 100).toFixed(1)}%`, x + barW / 2, y - 4);
+    if (displayProb > 0.01) {
+      ctx.fillStyle = `rgba(15, 23, 42, ${alpha * 0.95})`;
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText(`${(displayProb * 100).toFixed(1)}%`, x + barW / 2, y - 6);
     }
   }
 
   // Header Title for Canvas
-  ctx.fillStyle = 'rgba(6, 182, 212, 0.7)';
-  ctx.font = '10px monospace';
+  ctx.fillStyle = '#2563EB';
+  ctx.font = 'bold 10px monospace';
   ctx.textAlign = 'left';
-  ctx.fillText('QUANTUM AMPLITUDE WAVE FIELD — STATE EVOLUTION', padding.left, padding.top - 6);
-
-  // Y-axis grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
-  for (let p = 0; p <= 1; p += 0.25) {
-    const gy = padding.top + plotH * (1 - p);
-    ctx.beginPath();
-    ctx.moveTo(padding.left, gy);
-    ctx.lineTo(W - padding.right, gy);
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(150,170,200,0.5)';
-    ctx.font = '9px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${(p * 100).toFixed(0)}%`, padding.left - 4, gy + 3);
-  }
+  ctx.fillText('QUANTUM AMPLITUDE WAVE FIELD — STATE EVOLUTION', padding.left, padding.top - 12);
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -416,9 +404,9 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
       {!isUnavailable && (<>
       {/* Step header — all data derived from trace, no circuit-specific display */}
       <div style={{
-        padding: '12px 16px',
-        backgroundColor: 'rgba(5,5,20,0.6)',
-        border: '1px solid var(--border-active)',
+        padding: '12px 18px',
+        backgroundColor: '#EFF6FF',
+        border: '1px solid #BFDBFE',
         borderRadius: '8px',
         display: 'flex',
         alignItems: 'center',
@@ -427,24 +415,24 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
         gap: '8px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+          <div style={{ color: 'var(--accent-primary)', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
             STEP {currentStep + 1} / {totalSteps}
           </div>
           <div style={{
-            color: isSkipped ? 'rgba(255,200,0,0.8)' : 'var(--accent-secondary)',
-            fontFamily: 'monospace',
+            color: '#1E3A8A',
+            fontFamily: 'var(--font-mono)',
             fontSize: '0.95rem',
-            fontWeight: 600,
+            fontWeight: 700,
           }}>
             {stepLabel}
           </div>
           {isSkipped && (
             <div style={{
               padding: '2px 8px', borderRadius: '4px',
-              backgroundColor: 'rgba(255,200,0,0.15)',
-              border: '1px solid rgba(255,200,0,0.4)',
-              color: 'rgba(255,200,0,0.8)',
-              fontSize: '0.75rem', fontFamily: 'monospace'
+              backgroundColor: '#FEF3C7',
+              border: '1px solid #FCD34D',
+              color: '#92400E',
+              fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 600
             }}>
               CONDITIONAL SKIPPED
             </div>
@@ -452,10 +440,10 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
           {info?.isMeasurement && (
             <div style={{
               padding: '2px 8px', borderRadius: '4px',
-              backgroundColor: 'rgba(255,100,100,0.15)',
-              border: '1px solid rgba(255,100,100,0.4)',
-              color: 'rgba(255,150,150,0.9)',
-              fontSize: '0.75rem', fontFamily: 'monospace'
+              backgroundColor: '#FEE2E2',
+              border: '1px solid #FCA5A5',
+              color: '#991B1B',
+              fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 700
             }}>
               MEASUREMENT → |{info.measurementResult?.join('') || '?'}⟩
             </div>
@@ -463,29 +451,29 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
           {info?.isReset && (
             <div style={{
               padding: '2px 8px', borderRadius: '4px',
-              backgroundColor: 'rgba(100,200,255,0.1)',
-              border: '1px solid rgba(100,200,255,0.3)',
-              color: 'rgba(150,210,255,0.8)',
-              fontSize: '0.75rem', fontFamily: 'monospace'
+              backgroundColor: '#E0F2FE',
+              border: '1px solid #BAE6FD',
+              color: '#0369A1',
+              fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 600
             }}>
               RESET
             </div>
           )}
         </div>
-        <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'monospace' }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
           {info?.step?.backend || ''} · provenance: {info?.step?.provenance || ''}
         </div>
       </div>
 
       {/* Interpolation disclaimer */}
       <div style={{
-        padding: '4px 10px',
-        backgroundColor: 'rgba(255,200,0,0.05)',
-        border: '1px solid rgba(255,200,0,0.15)',
-        borderRadius: '4px',
-        fontSize: '0.72rem',
-        color: 'rgba(255,200,0,0.5)',
-        fontFamily: 'monospace',
+        padding: '6px 12px',
+        backgroundColor: '#FFFBEB',
+        border: '1px solid #FDE68A',
+        borderRadius: '6px',
+        fontSize: '0.75rem',
+        color: '#92400E',
+        fontFamily: 'var(--font-mono)',
       }}>
         ⚠ Visual interpolation between gate snapshots — not quantum simulation. Source: real backend execution trace.
       </div>
@@ -498,8 +486,9 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
           width: '100%',
           minHeight: '220px',
           borderRadius: '8px',
-          border: '1px solid var(--border-subtle)',
-          backgroundColor: 'rgba(5,5,15,0.95)',
+          border: '1px solid var(--border-medium)',
+          backgroundColor: '#FFFFFF',
+          boxShadow: 'var(--shadow-xs)',
           cursor: 'pointer',
         }}
         onClick={togglePlay}
@@ -510,8 +499,9 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '8px',
+        gap: '12px',
         flexWrap: 'wrap',
+        padding: '4px 0'
       }}>
         {/* Step timeline dots */}
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center', overflowX: 'auto', maxWidth: '280px' }}>
@@ -521,16 +511,16 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
               onClick={() => goToStep(i)}
               title={`Step ${i + 1}: ${trace[i]?.operation_name}`}
               style={{
-                width: i === currentStep ? '14px' : '8px',
+                width: i === currentStep ? '16px' : '8px',
                 height: '8px',
                 borderRadius: '4px',
                 border: 'none',
                 cursor: 'pointer',
                 backgroundColor: i === currentStep
-                  ? 'var(--accent-secondary)'
+                  ? 'var(--accent-primary)'
                   : trace[i]?.is_measurement
-                    ? 'rgba(255,100,100,0.6)'
-                    : 'rgba(255,255,255,0.25)',
+                    ? '#EF4444'
+                    : '#CBD5E1',
                 transition: 'all 0.15s ease',
                 flexShrink: 0,
               }}
@@ -538,23 +528,23 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button className="btn" onClick={() => goToStep(0)} title="Reset to start">⏮</button>
-          <button className="btn" onClick={() => goToStep(currentStep - 1)} title="Previous step" disabled={currentStep === 0}>⏪</button>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button className="btn" onClick={() => goToStep(0)} title="Reset to start" style={{ padding: '6px 10px', fontSize: '0.8rem' }}>⏮</button>
+          <button className="btn" onClick={() => goToStep(currentStep - 1)} title="Previous step" disabled={currentStep === 0} style={{ padding: '6px 10px', fontSize: '0.8rem' }}>⏪</button>
           <button
             className="btn btn-primary"
             onClick={togglePlay}
-            style={{ minWidth: '64px' }}
+            style={{ minWidth: '64px', padding: '6px 14px', fontSize: '0.85rem' }}
             title={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? '⏸' : '▶'}
           </button>
-          <button className="btn" onClick={() => goToStep(currentStep + 1)} title="Next step" disabled={currentStep >= totalSteps - 1}>⏩</button>
-          <button className="btn" onClick={() => goToStep(totalSteps - 1)} title="Go to end">⏭</button>
+          <button className="btn" onClick={() => goToStep(currentStep + 1)} title="Next step" disabled={currentStep >= totalSteps - 1} style={{ padding: '6px 10px', fontSize: '0.8rem' }}>⏩</button>
+          <button className="btn" onClick={() => goToStep(totalSteps - 1)} title="Go to end" style={{ padding: '6px 10px', fontSize: '0.8rem' }}>⏭</button>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Speed:</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>Speed:</span>
           <input
             type="range"
             min="0.25"
@@ -562,9 +552,9 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
             step="0.25"
             value={speed}
             onChange={e => { const v = parseFloat(e.target.value); animState.current.speed = v; setSpeed(v); }}
-            style={{ width: '80px' }}
+            style={{ width: '80px', accentColor: 'var(--accent-primary)' }}
           />
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontFamily: 'monospace', minWidth: '30px' }}>{speed}×</span>
+          <span style={{ color: 'var(--text-primary)', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', minWidth: '30px', fontWeight: 600 }}>{speed}×</span>
         </div>
       </div>
 
@@ -572,17 +562,17 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
       {info && info.svBefore && info.svBefore.length > 0 && (
         <div style={{
           marginTop: '8px',
-          padding: '12px',
-          backgroundColor: 'rgba(5,5,20,0.5)',
-          border: '1px solid var(--border-subtle)',
+          padding: '16px',
+          backgroundColor: '#F8FAFC',
+          border: '1px solid var(--border-medium)',
           borderRadius: '8px',
           fontSize: '0.8rem',
-          fontFamily: 'monospace',
+          fontFamily: 'var(--font-mono)',
         }}>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '8px', fontWeight: 600, letterSpacing: '0.05em' }}>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '10px', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             AMPLITUDE & INTERFERENCE MATRIX — STEP {currentStep + 1}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
             {info.svBefore.map((ampB, i) => {
               const ampA = info.svAfter[i] || { real: 0, imag: 0 };
               const magB = Math.sqrt(ampB.real * ampB.real + ampB.imag * ampB.imag);
@@ -596,28 +586,29 @@ export default function QuantumTracePlayer({ trace, numQubits, traceCapability, 
 
               let tag = 'INVARIANT';
               let tagColor = 'var(--text-muted)';
-              if (deltaP > 0.001) { tag = 'CONSTRUCTIVE ▲'; tagColor = 'var(--accent-secondary)'; }
-              else if (deltaP < -0.001) { tag = 'DESTRUCTIVE ▼'; tagColor = 'var(--accent-magenta)'; }
-              else if (deltaPh > 0.01) { tag = 'PHASE SHIFT ↻'; tagColor = 'var(--gate-y)'; }
+              let tagBg = '#F1F5F9';
+              if (deltaP > 0.001) { tag = 'CONSTRUCTIVE ▲'; tagColor = '#15803D'; tagBg = '#DCFCE7'; }
+              else if (deltaP < -0.001) { tag = 'DESTRUCTIVE ▼'; tagColor = '#B91C1C'; tagBg = '#FEE2E2'; }
+              else if (deltaPh > 0.01) { tag = 'PHASE SHIFT ↻'; tagColor = '#B45309'; tagBg = '#FEF3C7'; }
 
               const label = `|${i.toString(2).padStart(numQubits, '0')}⟩`;
-              const hue = phaseToHue(phA);
 
               return (
                 <div key={i} style={{
-                  padding: '8px',
+                  padding: '10px 12px',
                   borderRadius: '6px',
-                  backgroundColor: 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${probA > 0.01 ? `hsla(${hue}, 70%, 50%, 0.3)` : 'rgba(255,255,255,0.05)'}`,
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid var(--border-subtle)',
+                  boxShadow: 'var(--shadow-xs)'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--accent-secondary)' }}>{label}</span>
-                    <span style={{ fontSize: '0.7rem', color: tagColor }}>{tag}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '0.875rem' }}>{label}</span>
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, color: tagColor, backgroundColor: tagBg, padding: '2px 6px', borderRadius: '4px' }}>{tag}</span>
                   </div>
-                  <div style={{ color: 'var(--text-primary)', fontSize: '0.75rem' }}>
-                    P: {(probA * 100).toFixed(1)}% <span style={{ opacity: 0.6 }}>({(probB * 100).toFixed(1)}% pre)</span>
+                  <div style={{ color: 'var(--text-primary)', fontSize: '0.78rem', fontWeight: 600 }}>
+                    P: {(probA * 100).toFixed(1)}% <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({(probB * 100).toFixed(1)}% pre)</span>
                   </div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', marginTop: '2px' }}>
                     Phase: {(phA * 180 / Math.PI).toFixed(0)}° / {phA.toFixed(2)}rad
                   </div>
                 </div>

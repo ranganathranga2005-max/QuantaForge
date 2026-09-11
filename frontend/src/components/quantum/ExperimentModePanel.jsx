@@ -11,18 +11,19 @@ export default function ExperimentModePanel({
       flexDirection: 'column',
       gap: '20px',
       padding: '24px',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+      backgroundColor: '#FFFFFF',
       border: '1px solid var(--border-subtle)',
-      borderRadius: '12px',
-      minHeight: '400px'
+      borderRadius: '10px',
+      minHeight: '400px',
+      boxShadow: 'var(--shadow-xs)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h3 style={{ margin: 0, color: 'var(--accent-secondary)', fontFamily: 'monospace', fontSize: '1.2rem' }}>
+          <h3 style={{ margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '1.2rem', fontWeight: 800 }}>
             ADVANCED EXPERIMENTS WORKBENCH
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px', margin: 0 }}>
-            Compare cross-backend execution results across Custom M1, Qiskit Aer, PennyLane, and Cirq simulators.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px', margin: 0 }}>
+            Compare cross-backend execution results across Custom M1, Qiskit Aer, PennyLane, and Cirq simulators simultaneously.
           </p>
         </div>
 
@@ -30,47 +31,45 @@ export default function ExperimentModePanel({
           onClick={onRunParallelSimulation}
           disabled={isLoading}
           style={{
-            padding: '12px 24px',
-            backgroundColor: 'linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%)',
-            color: 'white',
-            border: '1px solid rgba(167, 139, 250, 0.5)',
-            borderRadius: '8px',
-            fontWeight: 800,
-            fontFamily: 'monospace',
-            fontSize: '0.9rem',
+            padding: '10px 20px',
+            backgroundColor: 'var(--accent-primary)',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 700,
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.85rem',
             cursor: 'pointer',
-            boxShadow: '0 0 15px rgba(167, 139, 250, 0.3)'
+            boxShadow: 'var(--shadow-xs)'
           }}
         >
-          {isLoading ? 'RUNNING CROSS-BACKEND...' : '⚡ RUN PARALLEL BACKEND COMPARISON'}
+          {isLoading ? 'RUNNING CROSS-BACKEND...' : '⚡ RUN PARALLEL COMPARISON'}
         </button>
       </div>
 
       {parallelResults ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginTop: '16px' }}>
           {Object.entries(parallelResults.results || {}).map(([bName, bRes]) => (
-            <div key={bName} style={{ padding: '16px', backgroundColor: 'rgba(5, 5, 15, 0.6)', border: '1px solid var(--border-subtle)', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase' }}>
+            <div key={bName} style={{ padding: '16px', backgroundColor: '#F8FAFC', border: '1px solid var(--border-subtle)', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase' }}>
                   {bName}
                 </span>
-                <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#10b981' }}>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#15803D', fontWeight: 700 }}>
                   {bRes.status}
                 </span>
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                Sampled Measurement: <strong style={{ color: 'white' }}>|{bRes.measurement}⟩</strong>
-              </div>
-              <div style={{ marginTop: '10px', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                Probabilities: {JSON.stringify(bRes.probabilities)}
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                <div>Sample: <strong>|{bRes.measurement || 'N/A'}⟩</strong></div>
+                <div>Runtime: <strong>{bRes.execution_time_ms ? `${bRes.execution_time_ms.toFixed(2)} ms` : 'N/A'}</strong></div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '240px', border: '1px dashed var(--border-subtle)', borderRadius: '8px' }}>
-          <p style={{ color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '0.9rem' }}>
-            Click "RUN PARALLEL BACKEND COMPARISON" to execute the current circuit across all 4 quantum backends simultaneously.
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '260px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontFamily: 'var(--font-mono)' }}>
+            Click "RUN PARALLEL COMPARISON" to dispatch circuit execution across all backends.
           </p>
         </div>
       )}

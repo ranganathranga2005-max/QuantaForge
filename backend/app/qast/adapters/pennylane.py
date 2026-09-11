@@ -24,13 +24,24 @@ ENDIANNESS:
   No bit-reversal is required.
 """
 import numpy as np
-import pennylane as qml
+try:
+    import pennylane as qml
+    _PENNYLANE_AVAILABLE = True
+except ImportError:
+    _PENNYLANE_AVAILABLE = False
 from typing import Optional, List, Dict, Any
 
 from app.qast.nodes import Circuit, GateNode, MeasurementNode, ResetNode, ConditionalNode
 
 
 GATE_MAP = {
+    "X": "qml.PauliX",
+    "Y": "qml.PauliY",
+    "Z": "qml.PauliZ",
+    "H": "qml.Hadamard",
+    "S": "qml.S",
+    "T": "qml.T",
+} if not _PENNYLANE_AVAILABLE else {
     "X": qml.PauliX,
     "Y": qml.PauliY,
     "Z": qml.PauliZ,
@@ -91,6 +102,8 @@ def _get_control_qubits(op: GateNode) -> List[int]:
 
 class PennyLaneAdapter:
     def execute(self, circuit: Circuit) -> dict:
+        if not _PENNYLANE_AVAILABLE:
+            raise ValueError("pennylane: PennyLane is not installed. Run: pip install pennylane")
         n = circuit.num_qubits
 
         # Check for dynamic operations (unsupported in PennyLane adapter)

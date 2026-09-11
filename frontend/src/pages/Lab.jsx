@@ -68,11 +68,14 @@ export default function Lab() {
     }
   };
 
-  // Load preset if navigated from Learn
+  // Load preset if navigated from Learn or Experiments
   useEffect(() => {
     if (location.state && location.state.preset) {
+      if (location.state.numQubits) {
+        setNumQubits(location.state.numQubits);
+      }
       setVisualGates(location.state.preset);
-      pushStateToHistory(location.state.preset);
+      pushStateToHistory(location.state.preset, location.state.numQubits || numQubits);
       setIsStale(true);
       window.history.replaceState({}, document.title);
     } else {
@@ -541,40 +544,41 @@ export default function Lab() {
       {/* TOP HEADER: Main Quantum Controls */}
       <div style={{
         padding: '12px 24px',
-        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        backgroundColor: '#FFFFFF',
         borderBottom: '1px solid var(--border-subtle)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px'
+        gap: '16px',
+        boxShadow: 'var(--shadow-xs)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, letterSpacing: '0.06em', fontFamily: 'monospace' }}>
-            <span style={{ color: 'var(--accent-secondary)' }}>QUANTUM</span> LAB
+          <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ color: 'var(--accent-primary)' }}>QUANTUM</span> LAB
           </h2>
 
           <div style={{ display: 'flex', gap: '6px' }}>
-            <button className="btn" onClick={clearCircuit} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'monospace' }} title="Reset Circuit">
+            <button className="btn" onClick={clearCircuit} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'var(--font-mono)' }} title="Reset Circuit">
               New Circuit
             </button>
-            <button className="btn" onClick={handleUndo} disabled={historyIndex <= 0} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'monospace' }}>
+            <button className="btn" onClick={handleUndo} disabled={historyIndex <= 0} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'var(--font-mono)' }}>
               ↶ Undo
             </button>
-            <button className="btn" onClick={handleRedo} disabled={historyIndex >= history.length - 1} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'monospace' }}>
+            <button className="btn" onClick={handleRedo} disabled={historyIndex >= history.length - 1} style={{ fontSize: '0.78rem', padding: '6px 10px', fontFamily: 'var(--font-mono)' }}>
               ↷ Redo
             </button>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace', fontWeight: 600 }}>BACKEND:</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>BACKEND:</span>
             <BackendSelector selectedBackend={selectedBackend} onBackendChange={setSelectedBackend} />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace', fontWeight: 600 }}>QUBITS:</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>QUBITS:</span>
             <select
               value={numQubits}
               onChange={e => {
@@ -583,12 +587,12 @@ export default function Lab() {
                 pushStateToHistory(visualGates, n);
               }}
               style={{
-                background: 'rgba(5, 5, 15, 0.9)',
-                border: '1px solid var(--border-subtle)',
+                background: '#FFFFFF',
+                border: '1px solid var(--border-medium)',
                 color: 'var(--text-primary)',
                 padding: '6px 10px',
                 borderRadius: '6px',
-                fontFamily: 'monospace',
+                fontFamily: 'var(--font-mono)',
                 fontSize: '0.85rem'
               }}
             >
@@ -601,9 +605,9 @@ export default function Lab() {
             onClick={() => setIsAiDrawerOpen(true)}
             style={{
               fontSize: '0.8rem',
-              borderColor: 'rgba(6, 182, 212, 0.4)',
-              color: 'var(--accent-secondary)',
-              backgroundColor: 'rgba(6, 182, 212, 0.08)'
+              borderColor: '#BFDBFE',
+              color: 'var(--accent-primary)',
+              backgroundColor: '#EFF6FF'
             }}
           >
             🤖 ASK AI TUTOR
@@ -613,27 +617,27 @@ export default function Lab() {
             onClick={runSimulation}
             disabled={isLoading}
             style={{
-              padding: '8px 24px',
-              fontSize: '0.9rem',
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
-              color: '#0b1120',
+              padding: '8px 20px',
+              fontSize: '0.875rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              background: 'var(--accent-primary)',
+              color: '#FFFFFF',
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
-              boxShadow: '0 0 15px rgba(6, 182, 212, 0.4)',
-              fontFamily: 'monospace'
+              boxShadow: 'var(--shadow-xs)',
+              fontFamily: 'var(--font-mono)'
             }}
           >
-            {isLoading ? 'RUNNING SIMULATION...' : '▶ RUN SIMULATION'}
+            {isLoading ? 'RUNNING...' : '▶ RUN SIMULATION'}
           </button>
         </div>
       </div>
 
       {/* SECONDARY MODE BAR */}
       <div style={{
-        backgroundColor: 'rgba(10, 15, 30, 0.9)',
+        backgroundColor: '#F8FAFC',
         borderBottom: '1px solid var(--border-subtle)',
         padding: '6px 24px',
         display: 'flex',
@@ -649,15 +653,16 @@ export default function Lab() {
             key={m.id}
             onClick={() => setActiveMode(m.id)}
             style={{
-              padding: '6px 16px',
+              padding: '6px 14px',
               borderRadius: '4px',
               border: 'none',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 700,
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-mono)',
               cursor: 'pointer',
-              backgroundColor: activeMode === m.id ? 'var(--accent-primary)' : 'transparent',
-              color: activeMode === m.id ? '#0b1120' : 'var(--text-muted)',
+              backgroundColor: activeMode === m.id ? '#FFFFFF' : 'transparent',
+              color: activeMode === m.id ? 'var(--accent-primary)' : 'var(--text-muted)',
+              borderBottom: activeMode === m.id ? '2px solid var(--accent-primary)' : '2px solid transparent',
               transition: 'all 0.15s ease'
             }}
           >
@@ -668,12 +673,12 @@ export default function Lab() {
 
       {/* Execution Error Banner */}
       {error && (
-        <div style={{ margin: '16px 24px', padding: '16px 20px', backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid var(--gate-x)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ margin: '16px 24px', padding: '14px 18px', backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gate-x)', fontFamily: 'monospace' }}>SIMULATION EXECUTION ERROR</div>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', marginTop: '4px', fontFamily: 'monospace' }}>{error}</div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--gate-x)', fontFamily: 'var(--font-mono)' }}>SIMULATION EXECUTION ERROR</div>
+            <div style={{ fontSize: '0.85rem', color: '#991B1B', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>{error}</div>
           </div>
-          <button className="btn" style={{ fontSize: '0.8rem' }} onClick={() => setError(null)}>Dismiss</button>
+          <button className="btn" style={{ fontSize: '0.75rem' }} onClick={() => setError(null)}>Dismiss</button>
         </div>
       )}
 
@@ -682,20 +687,20 @@ export default function Lab() {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.7)',
+          backgroundColor: 'rgba(15, 23, 42, 0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid var(--accent-secondary)', padding: '24px', borderRadius: '12px', width: '320px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h4 style={{ margin: 0, color: 'var(--accent-secondary)', fontFamily: 'monospace' }}>Set Rotation Parameter (θ)</h4>
+          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid var(--border-medium)', padding: '24px', borderRadius: '10px', width: '340px', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: 'var(--shadow-lg)' }}>
+            <h4 style={{ margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '1rem', fontWeight: 700 }}>Set Rotation Parameter (θ)</h4>
             <input
               type="number"
               step="0.1"
               defaultValue="0.785"
               id="thetaInput"
-              style={{ padding: '8px', background: 'rgba(5,5,10,0.8)', border: '1px solid var(--border-subtle)', color: 'white', borderRadius: '6px', fontFamily: 'monospace' }}
+              style={{ padding: '9px 12px', background: '#FFFFFF', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', borderRadius: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}
             />
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button className="btn" onClick={() => setParameterPrompt(null)}>Cancel</button>
               <button className="btn btn-primary" onClick={() => handleParameterSubmit(document.getElementById('thetaInput').value)}>Apply Gate</button>
             </div>
@@ -787,45 +792,66 @@ export default function Lab() {
 
       {/* BOTTOM COLLAPSIBLE RESULT & PROCESS WORKSPACE */}
       <div style={{
-        backgroundColor: 'rgba(10, 15, 30, 0.95)',
-        borderTop: '1px solid var(--border-subtle)',
+        backgroundColor: '#FFFFFF',
+        borderTop: '1px solid var(--border-medium)',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        boxShadow: 'var(--shadow-md)'
       }}>
         {/* Toggle Bar */}
         <div
           onClick={() => setIsResultWorkspaceOpen(prev => !prev)}
           style={{
             padding: '10px 24px',
-            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            backgroundColor: '#F8FAFC',
+            borderBottom: isResultWorkspaceOpen ? '1px solid var(--border-subtle)' : 'none',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontFamily: 'monospace',
+            fontFamily: 'var(--font-mono)',
             fontSize: '0.82rem',
             fontWeight: 700,
             color: 'var(--text-primary)',
-            userSelect: 'none'
+            userSelect: 'none',
+            transition: 'background-color 0.15s ease'
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F1F5F9'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ color: 'var(--accent-secondary)' }}>
+            <span style={{ color: 'var(--accent-primary)', fontSize: '0.75rem' }}>
               {isResultWorkspaceOpen ? '▼' : '▲'}
             </span>
-            <span>SIMULATION RESULTS & PROCESS WORKSPACE</span>
+            <span>SIMULATION RESULTS & EXECUTION TRACE</span>
             {simResult && (
-              <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 600 }}>
-                (Status: {simResult.status})
+              <span style={{
+                color: '#15803D',
+                backgroundColor: '#F0FDF4',
+                border: '1px solid #BBF7D0',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontSize: '0.725rem',
+                fontWeight: 700
+              }}>
+                Status: {simResult.status}
               </span>
             )}
             {isStale && (
-              <span style={{ color: 'rgba(255, 200, 0, 0.9)', fontSize: '0.75rem', fontWeight: 600 }}>
+              <span style={{
+                color: '#B45309',
+                backgroundColor: '#FFFBEB',
+                border: '1px solid #FDE68A',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontSize: '0.725rem',
+                fontWeight: 700
+              }}>
                 ⚠ STALE
               </span>
             )}
           </div>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600 }}>
             {isResultWorkspaceOpen ? 'Click to collapse' : 'Click to expand'}
           </span>
         </div>

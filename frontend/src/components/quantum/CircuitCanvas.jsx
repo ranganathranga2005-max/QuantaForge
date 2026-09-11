@@ -32,33 +32,33 @@ export default function CircuitCanvas({
         if (standardGate.parameters && standardGate.parameters.theta !== undefined) {
            label = `${label}(${typeof standardGate.parameters.theta === 'number' ? standardGate.parameters.theta.toFixed(2) : standardGate.parameters.theta})`;
         }
-        content = <div className={`placed-gate gate-${standardGate.gate}`} style={{ fontSize: label.length > 3 ? '0.6rem' : '1rem' }}>{label}</div>;
+        content = <div className={`placed-gate gate-${standardGate.gate}`} style={{ fontSize: label.length > 3 ? '0.65rem' : '0.95rem' }}>{label}</div>;
       } else if (measurementGate) {
-        content = <div className="placed-gate gate-M" style={{ backgroundColor: '#4a5568', fontSize: '0.8rem' }}>M</div>;
+        content = <div className="placed-gate gate-M" style={{ backgroundColor: '#D97706', fontSize: '0.85rem' }}>M</div>;
       } else if (twoQubitGate) {
         if (twoQubitGate.gate === 'CNOT') {
            if (twoQubitGate.control === qIndex) {
-              content = <div className="placed-gate gate-CNOT" style={{borderRadius: '50%', width: 16, height: 16}}></div>;
+              content = <div className="placed-gate gate-CNOT" style={{ borderRadius: '50%', width: 16, height: 16 }}></div>;
            } else {
-              content = <div className="placed-gate gate-CNOT" style={{borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem'}}>⊕</div>;
+              content = <div className="placed-gate gate-CNOT" style={{ borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>⊕</div>;
            }
         } else if (twoQubitGate.gate === 'CZ') {
-           content = <div className="placed-gate gate-CZ" style={{borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-z)'}}></div>;
+           content = <div className="placed-gate gate-CZ" style={{ borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-z)' }}></div>;
         } else if (twoQubitGate.gate === 'SWAP') {
-           content = <div className="placed-gate gate-SWAP" style={{width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: 'var(--gate-x)'}}>×</div>;
+           content = <div className="placed-gate gate-SWAP" style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', color: 'var(--gate-x)' }}>×</div>;
         } else if (twoQubitGate.gate === 'CPHASE') {
            if (twoQubitGate.control === qIndex) {
-              content = <div className="placed-gate gate-CPHASE" style={{borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-s)'}}></div>;
+              content = <div className="placed-gate gate-CPHASE" style={{ borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-s)' }}></div>;
            } else {
               let label = twoQubitGate.parameters?.theta !== undefined ? Number(twoQubitGate.parameters.theta).toFixed(2) : '';
-              content = <div className="placed-gate gate-CPHASE" style={{borderRadius: '50%', width: 32, height: 32, backgroundColor: 'var(--gate-s)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', color: '#fff'}}>{label}</div>;
+              content = <div className="placed-gate gate-CPHASE" style={{ borderRadius: '50%', width: 32, height: 32, backgroundColor: 'var(--gate-s)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: '#fff' }}>{label}</div>;
            }
         }
       } else if (multiQubitGate) {
         if (multiQubitGate.controls && multiQubitGate.controls.includes(qIndex)) {
-            content = <div className="placed-gate gate-MCX-control" style={{borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-x)'}}></div>;
+            content = <div className="placed-gate gate-MCX-control" style={{ borderRadius: '50%', width: 16, height: 16, backgroundColor: 'var(--gate-x)' }}></div>;
         } else if (multiQubitGate.target === qIndex) {
-            content = <div className="placed-gate gate-MCX-target" style={{borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: 'var(--gate-x)', border: '2px solid var(--gate-x)'}}>⊕</div>;
+            content = <div className="placed-gate gate-MCX-target" style={{ borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', color: 'var(--gate-x)', border: '2px solid var(--gate-x)' }}>⊕</div>;
         }
       }
 
