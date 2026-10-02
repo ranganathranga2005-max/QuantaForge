@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.routes import health, ai, rag, simulation, learning, algorithms, backends, experiments, auth
+from app.api.routes import health, ai, rag, simulation, learning, algorithms, backends, experiments, auth, platform
 
 api_router = APIRouter()
 api_router.include_router(health.router, prefix="/health", tags=["health"])
@@ -11,6 +11,7 @@ api_router.include_router(learning.router, prefix="/learning", tags=["learning"]
 api_router.include_router(algorithms.router, prefix="/algorithms", tags=["algorithms"])
 api_router.include_router(backends.router, prefix="/backends", tags=["backends"])
 api_router.include_router(auth.router)
+api_router.include_router(platform.router)
 
 
 

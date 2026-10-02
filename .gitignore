@@ -41,3 +41,7 @@ Thumbs.db
 .vscode/
 !.vscode/extensions.json
 .idea/
+
+# Database files
+*.sqlite
+*.db

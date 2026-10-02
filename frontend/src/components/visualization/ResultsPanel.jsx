@@ -4,6 +4,10 @@ import StatevectorVisualization from './StatevectorVisualization';
 import QuantumTracePlayer from './QuantumTracePlayer';
 import BlochSphere3D from './BlochSphere3D';
 import InterferenceVisualization from './InterferenceVisualization';
+import EntanglementWeb3D from './EntanglementWeb3D';
+import GroverLandscape3D from './GroverLandscape3D';
+import QuantumTeleportation3D from './QuantumTeleportation3D';
+import QECSurfaceCode3D from './QECSurfaceCode3D';
 
 export default function ResultsPanel({ simResult, isStale }) {
   const [activeTab, setActiveTab] = useState('Process');
@@ -13,12 +17,16 @@ export default function ResultsPanel({ simResult, isStale }) {
       <div className="lab-tabs" style={{ padding: '0 16px', overflowX: 'auto', flexShrink: 0, whiteSpace: 'nowrap', display: 'flex', gap: '4px', backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--border-subtle)' }}>
         {[
           { id: 'Process', label: 'Step Trace' },
-          { id: 'Results', label: 'Summary' },
+          { id: 'Bloch', label: '3D Bloch' },
+          { id: 'Entanglement3D', label: '3D Entangle Web' },
+          { id: 'Grover3D', label: '3D Grover City' },
+          { id: 'Teleport3D', label: '3D Teleport' },
+          { id: 'QEC3D', label: '3D QEC Code' },
           { id: 'Probabilities', label: 'Probabilities' },
           { id: 'Interference', label: 'Phase & Wave' },
           { id: 'Statevector', label: 'Statevector' },
-          { id: 'Bloch', label: '3D Bloch Sphere' },
-          { id: 'Amplitudes', label: 'Amplitudes Table' }
+          { id: 'Results', label: 'Summary' },
+          { id: 'Amplitudes', label: 'Amplitudes' }
         ].map(tab => (
           <div
             key={tab.id}
@@ -163,6 +171,34 @@ export default function ResultsPanel({ simResult, isStale }) {
         {activeTab === 'Bloch' && (
           <div style={{ animation: 'fadeIn 0.2s ease' }}>
             <BlochSphere3D statevector={simResult?.statevector} />
+          </div>
+        )}
+
+        {/* 3D Entanglement Web Tab */}
+        {activeTab === 'Entanglement3D' && (
+          <div style={{ animation: 'fadeIn 0.2s ease' }}>
+            <EntanglementWeb3D simResult={simResult} numQubits={simResult?.num_qubits ?? 2} />
+          </div>
+        )}
+
+        {/* 3D Grover Cityscape Tab */}
+        {activeTab === 'Grover3D' && (
+          <div style={{ animation: 'fadeIn 0.2s ease' }}>
+            <GroverLandscape3D />
+          </div>
+        )}
+
+        {/* 3D Quantum Teleportation Tab */}
+        {activeTab === 'Teleport3D' && (
+          <div style={{ animation: 'fadeIn 0.2s ease' }}>
+            <QuantumTeleportation3D />
+          </div>
+        )}
+
+        {/* 3D QEC Surface Code Tab */}
+        {activeTab === 'QEC3D' && (
+          <div style={{ animation: 'fadeIn 0.2s ease' }}>
+            <QECSurfaceCode3D />
           </div>
         )}
 

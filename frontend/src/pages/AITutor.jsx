@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { queryAI, buildContextEnvelope } from '../services/aiClient';
+import LevelSelector from '../components/learning/LevelSelector';
+import { fetchLevel, setUserLevel } from '../services/learningApi';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -8,9 +10,30 @@ function formatTime(ts) {
   return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+function parseAiTutorResponse(fullText) {
+  if (!fullText) return { textWithoutRelated: '', relatedQuestions: [] };
+
+  let text = fullText;
+  const relatedQuestions = [];
+
+  const relatedMatch = text.match(/###\s*💡\s*Related Questions:([\s\S]*)$/i);
+  if (relatedMatch) {
+    const rawQuestions = relatedMatch[1].trim().split('\n');
+    rawQuestions.forEach(q => {
+      const clean = q.replace(/^\d+[\.\)]\s*/, '').replace(/^[-*•]\s*/, '').trim();
+      if (clean && clean.length > 5) {
+        relatedQuestions.push(clean);
+      }
+    });
+    text = text.replace(/###\s*💡\s*Related Questions:[\s\S]*$/i, '').trim();
+  }
+
+  return { textWithoutRelated: text, relatedQuestions };
+}
+
 /**
- * Minimal markdown renderer — handles **bold**, `code`, bullet lists,
- * numbered lists, and newlines. No external deps needed.
+ * Enhanced markdown renderer — handles **bold**, `code`, bullet lists,
+ * numbered lists, and dedicated diagram boxes.
  */
 function renderMarkdown(text) {
   if (!text) return null;
@@ -66,8 +89,9 @@ function renderMarkdown(text) {
       continue;
     }
 
-    // Code block (```)
+    // Code/Diagram block (```)
     if (line.startsWith('```')) {
+      const isDiagram = line.includes('diagram') || line.includes('ascii');
       const codeLines = [];
       i++;
       while (i < lines.length && !lines[i].startsWith('```')) {
@@ -76,14 +100,20 @@ function renderMarkdown(text) {
       }
       i++; // skip closing ```
       elements.push(
-        <pre key={i} style={{
-          background: '#0F172A', color: '#E2E8F0',
-          padding: '12px 14px', borderRadius: '6px',
+        <div key={i} style={{
+          background: '#0F172A', color: '#38BDF8',
+          padding: '12px 14px', borderRadius: '8px',
           fontSize: '0.82rem', overflowX: 'auto',
-          margin: '8px 0', fontFamily: 'monospace', lineHeight: 1.5
+          margin: '10px 0', fontFamily: 'monospace', lineHeight: 1.45,
+          border: '1px solid #334155'
         }}>
-          <code>{codeLines.join('\n')}</code>
-        </pre>
+          <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {isDiagram ? '📐 Quantum Circuit / Concept Diagram' : '💻 Code / State Matrix'}
+          </div>
+          <pre style={{ margin: 0, color: '#E2E8F0', fontFamily: 'inherit' }}>
+            <code>{codeLines.join('\n')}</code>
+          </pre>
+        </div>
       );
       continue;
     }
@@ -131,26 +161,38 @@ function inlineFormat(text) {
   return parts.length > 0 ? parts : text;
 }
 
-// ─── Suggested Questions ────────────────────────────────────────────────────
+// ─── Level-Adaptive Suggested Questions ──────────────────────────────────────
 
-const SUGGESTED_QUESTIONS = [
-  'What is a qubit and how is it different from a classical bit?',
-  'Explain superposition in simple terms',
-  'How does the Hadamard gate create equal superposition?',
-  'What is quantum entanglement?',
-  'How does Grover\'s algorithm achieve a quadratic speedup?',
-  "What is the difference between |0⟩ and |1⟩?",
-  'Explain the CNOT gate with an example',
-  'What is a Bell state and how do I create one?',
-  'Why do we measure probabilities instead of exact values?',
-  'What is quantum interference?',
-  'Explain Shor\'s algorithm simply',
-  'What is quantum decoherence?',
-];
+const LEVEL_SUGGESTED_QUESTIONS = {
+  Beginner: [
+    'What is a qubit and how is it different from a classical bit?',
+    'Explain quantum superposition and the |+⟩ state in simple terms',
+    'How does the Hadamard gate create superposition on the Bloch sphere?',
+    'What happens when a qubit is measured in the computational basis?',
+    'Explain the Pauli-X NOT gate and Pauli-Z phase flip',
+    'Why is total probability |α|² + |β|² always equal to 1?'
+  ],
+  Intermediate: [
+    'What is quantum entanglement and how do I create a Bell state |Φ⁺⟩?',
+    'How does phase kickback work in the Deutsch-Jozsa algorithm?',
+    'Explain the step-by-step protocol of Quantum Teleportation',
+    'How does Grover\'s diffusion operator amplify target state probability?',
+    'Explain the 3-qubit GHZ state and its multipartite entanglement',
+    'What is the difference between pure states and mixed density matrices?'
+  ],
+  Advanced: [
+    'How does the Quantum Fourier Transform (QFT) enable Shor\'s factoring speedup?',
+    'Explain 2D Surface Code quantum error correction and syndrome extraction',
+    'How does the Variational Quantum Eigensolver (VQE) minimize molecular Hamiltonians?',
+    'Explain the Gottesman-Knill theorem and stabilizer tableau polynomial simulation',
+    'How do parameterized quantum circuits (PQC) perform Quantum Machine Learning?',
+    'What is Quantum Key Distribution (BB84/E91) and the no-cloning security proof?'
+  ]
+};
 
 // ─── Message Bubble ──────────────────────────────────────────────────────────
 
-function MessageBubble({ msg }) {
+function MessageBubble({ msg, onSelectQuestion }) {
   const isAi = msg.role === 'ai';
   const isSystem = msg.role === 'system';
 
@@ -168,6 +210,8 @@ function MessageBubble({ msg }) {
       </div>
     );
   }
+
+  const { textWithoutRelated, relatedQuestions } = isAi ? parseAiTutorResponse(msg.text) : { textWithoutRelated: msg.text, relatedQuestions: [] };
 
   return (
     <div style={{
@@ -222,7 +266,47 @@ function MessageBubble({ msg }) {
         fontSize: '0.925rem',
         lineHeight: 1.6
       }}>
-        {isAi ? renderMarkdown(msg.text) : msg.text}
+        {isAi ? renderMarkdown(textWithoutRelated) : msg.text}
+
+        {/* Interactive Related Question Buttons */}
+        {isAi && relatedQuestions.length > 0 && (
+          <div style={{
+            marginTop: '12px',
+            paddingTop: '10px',
+            borderTop: '1px solid #E2E8F0',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px'
+          }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1D4ED8', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              💡 Related Questions (Click to Ask):
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {relatedQuestions.map((q, qIdx) => (
+                <button
+                  key={qIdx}
+                  onClick={() => onSelectQuestion && onSelectQuestion(q)}
+                  style={{
+                    textAlign: 'left',
+                    background: '#F8FAFC',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.8rem',
+                    color: '#1E293B',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    lineHeight: '1.4'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.backgroundColor = '#EFF6FF'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+                >
+                  👉 {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Sources */}
         {isAi && msg.sources && msg.sources.length > 0 && (
@@ -297,10 +381,11 @@ export default function AITutor() {
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  const [userLevel, setUserLevelState] = useState('Beginner');
   const [messages, setMessages] = useState([
     {
       role: 'ai',
-      text: "Hello! I'm your **Quantum AI Academic Tutor** 🔬\n\nI can help you with:\n- Quantum gates and circuits\n- Superposition and entanglement\n- Quantum algorithms (Grover, Shor, VQE…)\n- Circuit debugging and analysis\n- Any concept you're studying\n\nAsk me anything — no question is too basic!",
+      text: "Hello! I'm your **Quantum AI Academic Tutor** 🔬\n\nI dynamically adapt explanations to your selected learning tier (Beginner, Intermediate, or Advanced).\n\nAsk me anything about qubits, gates, algorithms, NISQ methods, or circuit debugging!",
       sources: [],
       ts: Date.now()
     }
@@ -309,6 +394,20 @@ export default function AITutor() {
   const [loading, setLoading] = useState(false);
   const [useMock, setUseMock] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+
+  useEffect(() => {
+    async function loadLvl() {
+      const data = await fetchLevel();
+      if (data?.level) setUserLevelState(data.level);
+    }
+    loadLvl();
+
+    const handleLevelChanged = (e) => {
+      if (e.detail?.level) setUserLevelState(e.detail.level);
+    };
+    window.addEventListener('learning:level_changed', handleLevelChanged);
+    return () => window.removeEventListener('learning:level_changed', handleLevelChanged);
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -332,7 +431,7 @@ export default function AITutor() {
       page: 'aitutor',
       circuit: contextData.circuitContext || contextData.circuit,
       result: contextData.latestResult || contextData.quantum_result,
-      learning: { topic: contextData.lessonId }
+      learning: { topic: contextData.lessonId, difficulty: userLevel.toLowerCase() }
     });
 
     const res = await queryAI({
@@ -446,6 +545,12 @@ export default function AITutor() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Level Tier Switcher */}
+            <LevelSelector
+              compact={true}
+              onLevelChange={(lvl) => setUserLevelState(lvl)}
+            />
+
             <label style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               fontSize: '0.8rem', color: '#64748B', cursor: 'pointer',
@@ -499,7 +604,7 @@ export default function AITutor() {
             minHeight: '380px', maxHeight: '560px'
           }}>
             {messages.map((msg, idx) => (
-              <MessageBubble key={idx} msg={msg} />
+              <MessageBubble key={idx} msg={msg} onSelectQuestion={sendMessage} />
             ))}
 
             {loading && <TypingIndicator />}
@@ -512,23 +617,28 @@ export default function AITutor() {
               padding: '0 24px 16px',
               borderTop: '1px solid #E2E8F0', paddingTop: '14px'
             }}>
-              <p style={{
-                fontSize: '0.75rem', color: '#64748B', fontWeight: 600,
-                textTransform: 'uppercase', letterSpacing: '0.06em',
-                margin: '0 0 10px 0', fontFamily: 'monospace'
-              }}>
-                Suggested Questions
-              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <p style={{
+                  fontSize: '0.75rem', color: '#2563EB', fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.06em',
+                  margin: 0, fontFamily: 'monospace'
+                }}>
+                  {userLevel} Tier Suggested Questions
+                </p>
+                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                  Click to ask instantly
+                </span>
+              </div>
               <div style={{
                 display: 'flex', flexWrap: 'wrap', gap: '7px'
               }}>
-                {SUGGESTED_QUESTIONS.map((q, i) => (
+                {(LEVEL_SUGGESTED_QUESTIONS[userLevel] || LEVEL_SUGGESTED_QUESTIONS.Beginner).map((q, i) => (
                   <button
                     key={i}
                     className="suggestion-pill"
                     onClick={() => sendMessage(q)}
                     style={{
-                      fontSize: '0.8rem', color: '#374151',
+                      fontSize: '0.8rem', color: '#1E293B',
                       background: '#FFFFFF', border: '1px solid #D1D5DB',
                       borderRadius: '20px', padding: '5px 13px',
                       cursor: 'pointer', transition: 'all 0.15s',

@@ -1,7 +1,6 @@
 """
-Mock AI Provider — fully functional offline chatbot.
-Gives detailed, educationally accurate answers without any API key.
-Used as fallback when no LLM key is configured.
+Mock AI Provider — Fully functional offline quantum AI tutor.
+Delivers educationally accurate answers with ASCII circuit diagrams and curated follow-up questions.
 """
 from app.ai.llm.base import LLMProviderInterface
 
@@ -19,318 +18,288 @@ class MockAIProvider(LLMProviderInterface):
         p = prompt.lower()
 
         # ── Greetings ──────────────────────────────────────────────────────
-        if any(w in p for w in ["hello", "hi ", "hey", "how are you", "who are you"]):
+        if any(w in p for w in ["hello", "hi ", "hey", "how are you", "who are you", "help"]):
             return (
-                "Hello! I'm your **Quantum AI Tutor** 🔬\n\n"
-                "I can help you with:\n"
-                "- Qubits, superposition, entanglement, measurement\n"
-                "- Quantum gates: H, X, Y, Z, CNOT, RX, RY, RZ\n"
-                "- Quantum algorithms: Grover, Shor, VQE, QAOA, QFT\n"
-                "- Circuit building and debugging\n"
-                "- Any quantum computing concept you're studying\n\n"
-                "What would you like to learn today?"
+                "Hello! I am your **Quantum AI Tutor** 🔬\n\n"
+                "I am here to guide you through quantum computing, from single-qubit fundamentals to advanced algorithms like Grover and Shor.\n\n"
+                "```diagram\n"
+                "    ┌─────────────┐       ┌─────────────────┐       ┌──────────────────┐\n"
+                "    │   Qubits    │ ───►  │  Quantum Gates  │ ───►  │   Algorithms     │\n"
+                "    │ (|0⟩, |1⟩)  │       │ (H, X, CNOT...) │       │ (Grover, VQE...) │\n"
+                "    └─────────────┘       └─────────────────┘       └──────────────────┘\n"
+                "```\n\n"
+                "What concept would you like to explore today?\n\n"
+                "### 💡 Related Questions:\n"
+                "1. What is a qubit and how does it differ from a classical bit?\n"
+                "2. What is quantum superposition and how does the H gate create it?\n"
+                "3. How do quantum algorithms achieve exponential speedups?"
             )
 
         # ── Qubit ──────────────────────────────────────────────────────────
-        if any(w in p for w in ["qubit", "what is a qubit", "qubits"]):
+        if any(w in p for w in ["what is a qubit", "qubit", "qubits"]):
             return (
                 "A **qubit** (quantum bit) is the fundamental unit of quantum information.\n\n"
-                "**Classical bit vs Qubit:**\n"
-                "- A classical bit is always exactly 0 or 1\n"
-                "- A qubit can be in a **superposition**: |ψ⟩ = α|0⟩ + β|1⟩\n"
-                "- α and β are complex amplitudes where |α|² + |β|² = 1\n\n"
-                "**Physical implementations:**\n"
-                "- Electron spin (up = |0⟩, down = |1⟩)\n"
-                "- Photon polarization\n"
-                "- Superconducting circuits (used by IBM, Google)\n"
-                "- Trapped ions (used by IonQ)\n\n"
-                "**Key insight:** A qubit doesn't 'secretly' have a value — "
-                "it genuinely exists in both states simultaneously until measured."
+                "**Core Principles:**\n"
+                "- Unlike a classical bit (which must be strictly `0` or `1`), a qubit exists in a linear superposition: `|ψ⟩ = α|0⟩ + β|1⟩`\n"
+                "- `α` and `β` are complex probability amplitudes satisfying the normalization condition: `|α|² + |β|² = 1`\n"
+                "- Measurement collapses the state to `0` with probability `|α|²`, or `1` with probability `|β|²`.\n\n"
+                "```diagram\n"
+                "      Classical Bit                Quantum Qubit (Bloch Sphere)\n"
+                "         [ 0 ]                               |0⟩ (North Pole)\n"
+                "           │                                    ▲\n"
+                "           ▼                                    │   ↗ |ψ⟩ = α|0⟩ + β|1⟩\n"
+                "         [ 1 ]                       ◄──────────┼──────────►\n"
+                "                                                │\n"
+                "                                                ▼\n"
+                "                                             |1⟩ (South Pole)\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. How does the Bloch sphere represent a qubit geometrically?\n"
+                "2. What is quantum superposition and how does the H gate create it?\n"
+                "3. Why does measuring a qubit destroy its superposition?"
             )
 
         # ── Superposition ──────────────────────────────────────────────────
         if any(w in p for w in ["superposition", "super position"]):
             return (
-                "**Superposition** means a qubit exists in multiple states at once — not just a hidden value.\n\n"
-                "**Mathematically:**\n"
-                "|ψ⟩ = α|0⟩ + β|1⟩\n\n"
-                "where:\n"
-                "- α, β are complex numbers called **probability amplitudes**\n"
-                "- |α|² = probability of measuring 0\n"
-                "- |β|² = probability of measuring 1\n"
-                "- |α|² + |β|² = 1 (normalization)\n\n"
-                "**Creating superposition:**\n"
-                "Apply the `H` (Hadamard) gate to |0⟩:\n"
-                "H|0⟩ = (|0⟩ + |1⟩)/√2  →  50% chance of 0, 50% of 1\n\n"
-                "**Key insight:** Superposition is destroyed upon measurement — "
-                "the qubit collapses to a definite 0 or 1."
+                "**Superposition** is the ability of a quantum system to exist simultaneously in a combination of multiple states.\n\n"
+                "**Mathematical Formulation:**\n"
+                "- For a single qubit: `|ψ⟩ = α|0⟩ + β|1⟩`\n"
+                "- When `α = 1/√2` and `β = 1/√2`, measuring the qubit gives `0` (50% probability) and `1` (50% probability).\n"
+                "- This is fundamentally different from classical randomness: amplitudes can interfere constructively or destructively.\n\n"
+                "```diagram\n"
+                "               Hadamard Gate (H)\n"
+                "    |0⟩ ────────────────[ H ]────────────────► |+⟩ = (|0⟩ + |1⟩)/√2\n"
+                "\n"
+                "    Probability:  |0⟩ (50%) ▓▓▓▓▓▓▓▓\n"
+                "                  |1⟩ (50%) ▓▓▓▓▓▓▓▓\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. What happens if you apply two Hadamard gates in a row (H²)?\n"
+                "2. What is quantum interference and how does phase kickback work?\n"
+                "3. How does superposition enable quantum parallelism across 2ⁿ states?"
             )
 
-        # ── Hadamard gate ──────────────────────────────────────────────────
-        if any(w in p for w in ["hadamard", "h gate", "h-gate"]):
+        # ── Hadamard Gate ──────────────────────────────────────────────────
+        if any(w in p for w in ["hadamard", "h gate", "h-gate", "h_gate"]):
             return (
-                "The **Hadamard gate** (H) is the most important single-qubit gate.\n\n"
-                "**What it does:**\n"
-                "- H|0⟩ = (|0⟩ + |1⟩)/√2  →  equal superposition\n"
-                "- H|1⟩ = (|0⟩ − |1⟩)/√2  →  equal superposition with phase flip\n\n"
-                "**Matrix representation:**\n"
-                "H = (1/√2) × [[1, 1], [1, −1]]\n\n"
-                "**Key properties:**\n"
-                "- H is its own inverse: H² = I\n"
-                "- Creates equal probability of 0 and 1\n"
-                "- Fundamental for quantum parallelism\n\n"
-                "**Used in:** Almost every quantum algorithm — Grover, QFT, Deutsch-Jozsa, Bell states"
+                "The **Hadamard Gate (H)** is the most essential single-qubit quantum gate, creating equal superposition from computational basis states.\n\n"
+                "**Gate Operations & Matrix:**\n"
+                "- `H|0⟩ = (|0⟩ + |1⟩)/√2 = |+⟩`\n"
+                "- `H|1⟩ = (|0⟩ - |1⟩)/√2 = |-⟩`\n"
+                "- **Self-Inverse Property:** `H · H = I` (applying H twice returns the original state).\n\n"
+                "```diagram\n"
+                "    H = (1/√2) [ 1   1 ]         Circuit Transformation:\n"
+                "               [ 1  -1 ]         q[0]: ──|0⟩──[ H ]──► 1/√2(|0⟩ + |1⟩)\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. Why is H · H equal to the Identity matrix (H² = I)?\n"
+                "2. How does the H gate rotate the state vector on the Bloch sphere?\n"
+                "3. How is the H gate used to build entangled Bell states?"
             )
 
-        # ── Entanglement ───────────────────────────────────────────────────
-        if any(w in p for w in ["entanglement", "entangled", "bell state", "bell"]):
+        # ── Pauli Gates (X, Y, Z) ──────────────────────────────────────────
+        if any(w in p for w in ["pauli", "x gate", "y gate", "z gate", "bit flip", "phase flip"]):
             return (
-                "**Quantum Entanglement** is a correlation between qubits that has no classical equivalent.\n\n"
-                "**Creating a Bell state (maximally entangled):**\n"
-                "1. Start: |00⟩\n"
-                "2. Apply H to qubit 0: (|00⟩ + |10⟩)/√2\n"
-                "3. Apply CNOT (control=q0, target=q1): (|00⟩ + |11⟩)/√2\n\n"
-                "**Result:** |Φ+⟩ = (|00⟩ + |11⟩)/√2\n\n"
-                "**What this means:**\n"
-                "- Measuring qubit 0 as 0 → qubit 1 is instantly 0\n"
-                "- Measuring qubit 0 as 1 → qubit 1 is instantly 1\n"
-                "- This holds true regardless of distance between qubits\n\n"
-                "**The 4 Bell states:** Φ+, Φ−, Ψ+, Ψ− — each maximally entangled"
+                "The **Pauli Gates (X, Y, Z)** represent the fundamental single-qubit rotations of π radians (180°) about the respective axes of the Bloch sphere.\n\n"
+                "**The Three Pauli Operators:**\n"
+                "- **Pauli-X (Bit-Flip / NOT):** `X|0⟩ = |1⟩`, `X|1⟩ = |0⟩`\n"
+                "- **Pauli-Z (Phase-Flip):** `Z|0⟩ = |0⟩`, `Z|1⟩ = -|1⟩`\n"
+                "- **Pauli-Y (Bit & Phase Flip):** `Y|0⟩ = i|1⟩`, `Y|1⟩ = -i|0⟩`\n\n"
+                "```diagram\n"
+                "    X Gate (Bit-Flip):       Z Gate (Phase-Flip):     Y Gate (Bit+Phase):\n"
+                "    q: ──|0⟩──[ X ]──► |1⟩   q: ──|+⟩──[ Z ]──► |-⟩   q: ──|0⟩──[ Y ]──► i|1⟩\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. What is the difference between an X gate (bit flip) and a Z gate (phase flip)?\n"
+                "2. What are the S and T phase gates and how do they relate to Z?\n"
+                "3. How do Pauli matrices form a basis for 2x2 Hermitian operators?"
             )
 
-        # ── CNOT gate ──────────────────────────────────────────────────────
-        if any(w in p for w in ["cnot", "cx gate", "controlled-not", "controlled not"]):
+        # ── CNOT & Two-Qubit Gates ─────────────────────────────────────────
+        if any(w in p for w in ["cnot", "cx", "controlled not", "cz gate", "swap gate", "two qubit"]):
             return (
-                "The **CNOT (Controlled-NOT)** gate is the fundamental 2-qubit gate.\n\n"
-                "**How it works:**\n"
-                "- Has a **control qubit** and a **target qubit**\n"
-                "- If control = |0⟩ → target unchanged\n"
-                "- If control = |1⟩ → target is flipped (X applied)\n\n"
-                "**Truth table:**\n"
-                "- |00⟩ → |00⟩\n"
-                "- |01⟩ → |01⟩\n"
-                "- |10⟩ → |11⟩\n"
-                "- |11⟩ → |10⟩\n\n"
-                "**Matrix:**\n"
-                "[[1,0,0,0], [0,1,0,0], [0,0,0,1], [0,0,1,0]]\n\n"
-                "**Key uses:** Creating entanglement, implementing classical logic, error correction"
+                "The **Controlled-NOT (CNOT / CX) Gate** is the standard two-qubit entangling gate.\n\n"
+                "**How CNOT Operates:**\n"
+                "- **Control Qubit (`q0`):** Remains unchanged.\n"
+                "- **Target Qubit (`q1`):** Inverted (X applied) if and only if the control qubit is `|1⟩`.\n"
+                "- Maps: `|00⟩ → |00⟩`, `|01⟩ → |01⟩`, `|10⟩ → |11⟩`, `|11⟩ → |10⟩`.\n\n"
+                "```diagram\n"
+                "    q[0] (Control): ───●───       Truth Table:\n"
+                "                       │          |00⟩ → |00⟩\n"
+                "    q[1] (Target):  ───⊕───       |01⟩ → |01⟩\n"
+                "                                  |10⟩ → |11⟩  (Flipped!)\n"
+                "                                  |11⟩ → |10⟩  (Flipped!)\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. How does combining H and CNOT create maximally entangled Bell states?\n"
+                "2. What is phase kickback when target qubit is in the |-⟩ state?\n"
+                "3. How do you construct a SWAP gate using three CNOT gates?"
             )
 
-        # ── Measurement ────────────────────────────────────────────────────
-        if any(w in p for w in ["measurement", "measure", "collapse", "wavefunction"]):
+        # ── Entanglement & Bell States ─────────────────────────────────────
+        if any(w in p for w in ["entanglement", "entangled", "bell state", "bell", "epr"]):
             return (
-                "**Quantum Measurement** is the process of extracting classical information from a qubit.\n\n"
-                "**What happens:**\n"
-                "- Before measurement: |ψ⟩ = α|0⟩ + β|1⟩\n"
-                "- After measurement: qubit collapses to either |0⟩ or |1⟩\n"
-                "- Probability of 0 = |α|², Probability of 1 = |β|²\n\n"
-                "**Key properties:**\n"
-                "- Measurement is **irreversible** — destroys superposition\n"
-                "- Repeated measurements give the same result (state collapsed)\n"
-                "- The Born rule gives the probability: P(0) = |⟨0|ψ⟩|²\n\n"
-                "**No-cloning theorem:** You cannot copy an unknown quantum state, "
-                "which is why measurement destroys it."
+                "**Quantum Entanglement** is a state where the quantum properties of two or more qubits are inextricably linked, such that measuring one instantly determines the state of the other.\n\n"
+                "**The Four Maximally Entangled Bell States:**\n"
+                "- `|Φ⁺⟩ = (|00⟩ + |11⟩) / √2`\n"
+                "- `|Φ⁻⟩ = (|00⟩ - |11⟩) / √2`\n"
+                "- `|Ψ⁺⟩ = (|01⟩ + |10⟩) / √2`\n"
+                "- `|Ψ⁻⟩ = (|01⟩ - |10⟩) / √2`\n\n"
+                "```diagram\n"
+                "               Bell State Generator Circuit (|Φ⁺⟩)\n"
+                "    q[0]: ──|0⟩──[ H ]──●──►  (|00⟩ + |11⟩) / √2\n"
+                "                        │\n"
+                "    q[1]: ──|0⟩─────────⊕──►\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. Why cannot entangled states be factored into independent product states?\n"
+                "2. How does Quantum Teleportation use Bell states to transmit qubits?\n"
+                "3. What is Bell's Theorem and how does it prove quantum non-locality?"
+            )
+
+        # ── Quantum Teleportation ──────────────────────────────────────────
+        if any(w in p for w in ["teleportation", "teleport", "quantum teleport"]):
+            return (
+                "**Quantum Teleportation** is a protocol to transmit an unknown quantum state `|ψ⟩ = α|0⟩ + β|1⟩` from Alice to Bob using a shared Bell pair and 2 classical bits.\n\n"
+                "**Step-by-Step Protocol:**\n"
+                "1. **Shared Entanglement:** Alice & Bob share Bell pair `(|00⟩+|11⟩)/√2`.\n"
+                "2. **Alice's Measurement:** Alice performs Bell measurement on `|ψ⟩` and her half of the Bell pair, yielding classical bits `(m₀, m₁)`.\n"
+                "3. **Classical Communication:** Alice sends `(m₀, m₁)` to Bob (no faster-than-light speed).\n"
+                "4. **Bob's Correction:** Bob applies `Xᵐ¹ Zᵐ⁰` to recover `|ψ⟩` identically.\n\n"
+                "```diagram\n"
+                "    |ψ⟩  ───●───[ H ]───[ M: m₀ ] ══════════════╗ (Classical Bits)\n"
+                "            │                                   ║\n"
+                "    A   ───⊕────────────[ M: m₁ ] ═══════╗      ║\n"
+                "                                         ║      ║\n"
+                "    B   ───────────────────────────────[ Xᵐ¹ ]─[ Zᵐ⁰ ]──► |ψ⟩ (Bob's Output)\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. Why does Quantum Teleportation not violate the No-Cloning Theorem?\n"
+                "2. Why is faster-than-light communication impossible with teleportation?\n"
+                "3. What corrective gates does Bob apply if Alice measures 01 or 11?"
             )
 
         # ── Grover's Algorithm ─────────────────────────────────────────────
-        if any(w in p for w in ["grover", "grover's", "search algorithm", "amplitude amplification"]):
+        if any(w in p for w in ["grover", "grovers", "search algorithm", "amplitude amplification"]):
             return (
-                "**Grover's Search Algorithm** finds a marked item in an unsorted database.\n\n"
-                "**Quantum speedup:**\n"
-                "- Classical: O(N) searches needed\n"
-                "- Grover: O(√N) searches — quadratic speedup\n\n"
-                "**Steps:**\n"
-                "1. **Initialize:** Apply H to all qubits → equal superposition\n"
-                "2. **Oracle:** Phase-flip the marked state (multiplies it by −1)\n"
-                "3. **Diffuser:** Inversion about average (amplifies marked state)\n"
-                "4. **Repeat:** Steps 2-3 for ≈ π√N/4 iterations\n"
-                "5. **Measure:** Marked state has high probability\n\n"
-                "**Example (4 items, 2 qubits):**\n"
-                "- Need only 1 iteration instead of 2-3 classical checks\n\n"
-                "**Key insight:** Constructive interference amplifies the answer, "
-                "destructive interference suppresses wrong answers."
+                "**Grover's Algorithm** solves unstructured search across `N = 2ⁿ` database items in `O(√N)` time, providing a quadratic speedup over classical `O(N)` search.\n\n"
+                "**Key Algorithmic Phases:**\n"
+                "1. **Uniform Superposition:** Apply `H^{\\otimes n}` to start in `|s⟩`.\n"
+                "2. **Oracle ($U_w$):** Flips the phase of the target marked state: `|w⟩ → -|w⟩`.\n"
+                "3. **Diffusion Operator ($2|s⟩⟨s| - I$):** Reflects all amplitudes across the mean, boosting target amplitude while suppressing non-target states.\n\n"
+                "```diagram\n"
+                "                 Grover Iteration (Repeated ~π/4 √N times)\n"
+                "    |0⟩─[H]─┐  ┌──────────────┐  ┌──────────────────┐  ┌───┐\n"
+                "    |0⟩─[H]─┼──┤ Oracle (U_w) ├──┤ Diffusion (2|s⟩⟨s|-I)├─┤ M ├──► Target |w⟩\n"
+                "    |0⟩─[H]─┘  └──────────────┘  └──────────────────┘  └───┘\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. How does the Oracle flip the phase of the marked target state?\n"
+                "2. How many Grover iterations are required for an 8-item database (3 qubits)?\n"
+                "3. What happens if you run too many Grover iterations (over-rotation)?"
             )
 
-        # ── Shor's Algorithm ───────────────────────────────────────────────
-        if any(w in p for w in ["shor", "shor's", "factoring", "rsa", "period finding"]):
+        # ── Shor's Algorithm & QFT ─────────────────────────────────────────
+        if any(w in p for w in ["shor", "shors", "factoring", "rsa", "qft", "fourier transform"]):
             return (
-                "**Shor's Algorithm** factors large numbers exponentially faster than classical computers.\n\n"
-                "**Why it matters:** It can break RSA encryption (used in banking, internet security).\n\n"
-                "**Core idea — Quantum Period Finding:**\n"
-                "1. Choose random a < N\n"
-                "2. Find period r of f(x) = aˣ mod N using QFT\n"
-                "3. Use r to compute factors: gcd(a^(r/2) ± 1, N)\n\n"
-                "**For N=15, a=2:**\n"
-                "- Period r = 4\n"
-                "- gcd(2² − 1, 15) = gcd(3, 15) = **3** ✓\n"
-                "- gcd(2² + 1, 15) = gcd(5, 15) = **5** ✓\n\n"
-                "**Speedup:** Classical best = O(e^(n^1/3)) | Shor = O(n³)\n\n"
-                "**Status:** Implemented for small N. Large-scale factoring needs millions of error-corrected qubits."
+                "**Shor's Algorithm** factors large composite integers `N = p × q` in polynomial time `O((log N)³)`, threatening classical RSA public-key encryption.\n\n"
+                "**Core Strategy:**\n"
+                "- Converts factoring into a **Period Finding problem**: finds period `r` of `f(x) = aˣ mod N`.\n"
+                "- Uses **Quantum Fourier Transform (QFT)** to extract period `r` exponentially faster than classical algorithms.\n"
+                "- Classical post-processing calculates `gcd(a^{r/2} ± 1, N)` to extract factors `p` and `q`.\n\n"
+                "```diagram\n"
+                "    Register 1 (|0⟩ⁿ): ──[ Hⁿ ]──●──────[ QFT⁻¹ ]──► Measure Phase s/r\n"
+                "                                 │\n"
+                "    Register 2 (|1⟩) : ────────[ U_a ]─────────────►\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. How does the Quantum Fourier Transform (QFT) extract periodic signals?\n"
+                "2. Why does Shor's algorithm provide an exponential speedup over classical algorithms?\n"
+                "3. How many physical qubits are needed to break RSA-2048 using error correction?"
             )
 
-        # ── VQE ────────────────────────────────────────────────────────────
-        if any(w in p for w in ["vqe", "variational quantum eigensolver", "ground state"]):
+        # ── Quantum Error Correction (QEC) ─────────────────────────────────
+        if any(w in p for w in ["qec", "error correction", "surface code", "syndrome", "bit-flip code"]):
             return (
-                "**VQE (Variational Quantum Eigensolver)** finds the ground state energy of molecules.\n\n"
-                "**Use case:** Quantum chemistry, drug discovery, materials science\n\n"
-                "**How it works (hybrid quantum-classical loop):**\n"
-                "1. Prepare a parameterized ansatz circuit U(θ)\n"
-                "2. Measure expectation value: ⟨ψ(θ)|H|ψ(θ)⟩\n"
-                "3. Classical optimizer (COBYLA, ADAM) updates θ\n"
-                "4. Repeat until energy converges to minimum\n\n"
-                "**Variational principle:** ⟨ψ|H|ψ⟩ ≥ E₀ (ground state energy)\n\n"
-                "**Advantage:** Works on NISQ devices — short circuits tolerate noise better"
+                "**Quantum Error Correction (QEC)** protects fragile quantum information from environmental noise and decoherence without measuring (and destroying) the logical quantum state.\n\n"
+                "**Key Mechanics:**\n"
+                "- **Entangled Encoding:** Encodes 1 logical qubit across multiple physical data qubits (e.g. 3-qubit bit-flip code: `|0_L⟩ = |000⟩`, `|1_L⟩ = |111⟩`).\n"
+                "- **Syndrome Measurement:** Ancilla qubits measure stabilizer operators ($Z_0 Z_1, Z_1 Z_2$) to locate errors without collapsing the superposition.\n"
+                "- **Recovery:** Applies corrective Pauli gates ($X$ or $Z$) to restore pristine state.\n\n"
+                "```diagram\n"
+                "    |ψ⟩ ──●──●───────────[ X? ]──► |ψ⟩ (Protected Logical Qubit)\n"
+                "          │  │     │  │\n"
+                "    |0⟩ ──⊕──┼─────●──┼──► [ M: Syndrome 1 ]\n"
+                "             │     │  │\n"
+                "    |0⟩ ─────⊕─────┼──●──► [ M: Syndrome 2 ]\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. How does the 3-qubit bit-flip code detect which qubit flipped?\n"
+                "2. What is the difference between a bit-flip (X) and phase-flip (Z) error?\n"
+                "3. How do 2D Surface Codes achieve high fault-tolerant error thresholds (~1%)?"
             )
 
-        # ── QFT ────────────────────────────────────────────────────────────
-        if any(w in p for w in ["qft", "quantum fourier", "fourier transform"]):
+        # ── VQE & Quantum Algorithms ───────────────────────────────────────
+        if any(w in p for w in ["vqe", "variational", "qaoa", "optimization", "eigensolver"]):
             return (
-                "**QFT (Quantum Fourier Transform)** is the quantum version of the classical DFT.\n\n"
-                "**What it does:** Transforms computational basis states to frequency domain\n\n"
-                "**Key property:**\n"
-                "QFT|j⟩ = (1/√N) Σₖ e^(2πijk/N) |k⟩\n\n"
-                "**Circuit structure (n qubits):**\n"
-                "1. Apply H to qubit 0\n"
-                "2. Apply controlled phase rotations R_k\n"
-                "3. Repeat for each qubit\n"
-                "4. Swap qubits (bit reversal)\n\n"
-                "**Complexity:** O(n²) gates vs O(n·2ⁿ) classically — exponential speedup\n\n"
-                "**Used in:** Shor's algorithm, phase estimation, period finding"
+                "**Variational Quantum Eigensolver (VQE)** is a hybrid quantum-classical algorithm designed for NISQ computers to find ground state energies of molecules and Hamiltonians.\n\n"
+                "**Hybrid Feedback Loop:**\n"
+                "1. **Quantum Processor (QPU):** Prepares parameterized quantum state `|ψ(θ)⟩` and measures expectation value `⟨H⟩_θ`.\n"
+                "2. **Classical Optimizer (CPU):** Runs gradient descent / Nelder-Mead to update parameter angles `θ` to minimize `⟨H⟩` according to the Variational Principle.\n\n"
+                "```diagram\n"
+                "    ┌─────────────┐  State |ψ(θ)⟩  ┌─────────────┐   Expectation ⟨H⟩\n"
+                "    │   Quantum   │ ─────────────► │ Measurement │ ────────────────┐\n"
+                "    │ QPU Ansatz  │ ◄───────────── │ Energy Eval │                 │\n"
+                "    └─────────────┘   New θ angles └─────────────┘                 ▼\n"
+                "                            ▲                             ┌─────────────────┐\n"
+                "                            └──────────────────────────── │ Classical CPU   │\n"
+                "                                                          │ Optimizer (Min) │\n"
+                "                                                          └─────────────────┘\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. What is the Variational Principle in quantum mechanics?\n"
+                "2. What are Barren Plateaus in parameterized quantum circuits?\n"
+                "3. How is QAOA used to solve combinatorial optimization problems (Max-Cut)?"
             )
 
-        # ── QAOA ───────────────────────────────────────────────────────────
-        if any(w in p for w in ["qaoa", "quantum approximate optimization"]):
+        # ── Hardware, Cryostats & Transmons ────────────────────────────────
+        if any(w in p for w in ["hardware", "cryostat", "refrigerator", "transmon", "superconducting", "ibm"]):
             return (
-                "**QAOA (Quantum Approximate Optimization Algorithm)** solves combinatorial optimization.\n\n"
-                "**Use case:** MaxCut, scheduling, routing, portfolio optimization\n\n"
-                "**How it works:**\n"
-                "1. Encode problem as a cost Hamiltonian H_C\n"
-                "2. Alternate between cost unitary e^(−iγH_C) and mixer unitary e^(−iβH_B)\n"
-                "3. Repeat p times (p = circuit depth parameter)\n"
-                "4. Classically optimize angles γ, β\n"
-                "5. Measure → best solution found\n\n"
-                "**Parameter p:** Higher p = better approximation but deeper circuit\n\n"
-                "**Advantage:** Works on NISQ hardware, approximation ratio improves with p"
+                "**Superconducting Quantum Hardware** uses artificial superconducting circuits (transmons) cooled to ~15 millikelvin inside a Dilution Refrigerator (Cryostat).\n\n"
+                "**Hardware Components:**\n"
+                "- **Dilution Refrigerator:** Multi-stage cooling chamber (50K → 4K → 100mK → 15mK) colder than deep space to eliminate thermal noise.\n"
+                "- **Transmon Qubit:** Anharmonic oscillator made of a Josephson junction and capacitor.\n"
+                "- **Control Lines:** Coaxial microwave cables transmitting gigahertz pulses for single-qubit rotations and flux lines for two-qubit gates.\n\n"
+                "```diagram\n"
+                "    [ 300 K ] Room Temp Electronics (Microwave Controllers)\n"
+                "       │\n"
+                "    [  50 K ] Radiation Shield\n"
+                "       │\n"
+                "    [   4 K ] Pulse Attenuation\n"
+                "       │\n"
+                "    [ 15 mK ] Quantum Processor Unit (QPU Chip in Magnetic Shield)\n"
+                "```\n\n"
+                "### 💡 Related Questions:\n"
+                "1. Why do superconducting qubits need to be cooled to 15 millikelvin?\n"
+                "2. What is a Josephson junction and why is non-linearity required for qubits?\n"
+                "3. What are T1 (relaxation) and T2 (dephasing) decoherence times?"
             )
 
-        # ── QEC ────────────────────────────────────────────────────────────
-        if any(w in p for w in ["qec", "error correction", "error correcting", "repetition code"]):
-            return (
-                "**Quantum Error Correction (QEC)** protects quantum information from decoherence.\n\n"
-                "**Why needed:** Qubits are fragile — even tiny environmental interactions cause errors\n\n"
-                "**3-Qubit Bit-Flip Repetition Code:**\n"
-                "1. Encode |ψ⟩ = α|0⟩+β|1⟩ into 3 qubits: α|000⟩ + β|111⟩\n"
-                "2. If qubit 1 flips: α|010⟩ + β|101⟩\n"
-                "3. Measure syndromes (ancilla qubits) to detect error\n"
-                "4. Syndrome 10 → qubit 0 flipped → apply X to fix it\n"
-                "5. Syndrome 11 → qubit 1 flipped → apply X to fix it\n\n"
-                "**Key principle:** Measure syndromes, NOT the data qubits — preserves superposition"
-            )
-
-        # ── Gates general ──────────────────────────────────────────────────
-        if any(w in p for w in ["pauli", "x gate", "y gate", "z gate", "s gate", "t gate", "rx", "ry", "rz", "rotation"]):
-            return (
-                "**Quantum Gates Overview:**\n\n"
-                "**Pauli Gates (single qubit):**\n"
-                "- `X` (NOT): flips |0⟩↔|1⟩, matrix [[0,1],[1,0]]\n"
-                "- `Y`: combines X and Z, matrix [[0,−i],[i,0]]\n"
-                "- `Z` (phase flip): |0⟩→|0⟩, |1⟩→−|1⟩\n\n"
-                "**Phase Gates:**\n"
-                "- `S` = Z^(1/2): applies phase of i to |1⟩\n"
-                "- `T` = Z^(1/4): applies phase of e^(iπ/4) to |1⟩\n\n"
-                "**Rotation Gates (parameterized):**\n"
-                "- `RX(θ)`: rotates around X-axis of Bloch sphere\n"
-                "- `RY(θ)`: rotates around Y-axis\n"
-                "- `RZ(θ)`: rotates around Z-axis\n\n"
-                "**Two-qubit Gates:**\n"
-                "- `CNOT`: controlled-X (creates entanglement)\n"
-                "- `CZ`: controlled-Z (phase kickback)\n"
-                "- `SWAP`: exchanges two qubit states"
-            )
-
-        # ── Bloch sphere ───────────────────────────────────────────────────
-        if any(w in p for w in ["bloch", "bloch sphere", "visualization"]):
-            return (
-                "The **Bloch Sphere** is a 3D visualization of a single qubit state.\n\n"
-                "**Representation:**\n"
-                "|ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩\n\n"
-                "**Key points on the sphere:**\n"
-                "- North pole (+Z): |0⟩\n"
-                "- South pole (−Z): |1⟩\n"
-                "- +X axis: (|0⟩+|1⟩)/√2 (after H gate)\n"
-                "- −X axis: (|0⟩−|1⟩)/√2\n"
-                "- +Y axis: (|0⟩+i|1⟩)/√2\n\n"
-                "**Gate effects on the Bloch sphere:**\n"
-                "- X gate: 180° rotation around X-axis\n"
-                "- H gate: 180° rotation around X+Z diagonal\n"
-                "- RZ(θ): rotation by θ around Z-axis\n\n"
-                "**Limitation:** Only works for a single qubit — entangled states cannot be visualized this way"
-            )
-
-        # ── Interference ───────────────────────────────────────────────────
-        if any(w in p for w in ["interference", "constructive", "destructive"]):
-            return (
-                "**Quantum Interference** is what makes quantum algorithms powerful.\n\n"
-                "**Constructive interference:** Amplitudes add up → increases probability of correct answer\n"
-                "**Destructive interference:** Amplitudes cancel → decreases probability of wrong answers\n\n"
-                "**Example — Deutsch-Jozsa algorithm:**\n"
-                "- Balanced function: all amplitudes cancel → measure all 1s\n"
-                "- Constant function: amplitudes reinforce → measure all 0s\n\n"
-                "**Key insight:** Unlike classical probability, quantum amplitudes are complex numbers "
-                "that can be negative or imaginary — allowing cancellation.\n\n"
-                "**This is fundamentally different from classical randomness** — "
-                "you're controlling the interference pattern, not just probability."
-            )
-
-        # ── Circuit ────────────────────────────────────────────────────────
-        if any(w in p for w in ["circuit", "quantum circuit", "how to build"]):
-            return (
-                "A **Quantum Circuit** is a sequence of quantum gates applied to qubits.\n\n"
-                "**Basic structure:**\n"
-                "1. Initialize qubits in |0⟩ state\n"
-                "2. Apply gates (unitary operations)\n"
-                "3. Measure qubits → classical output\n\n"
-                "**Example — Bell state circuit:**\n"
-                "```\n"
-                "q0: ──H────●────M\n"
-                "q1: ────────X───M\n"
-                "```\n"
-                "1. H on q0 → superposition\n"
-                "2. CNOT (q0 control, q1 target) → entanglement\n"
-                "3. Measure both → always get 00 or 11\n\n"
-                "**In this platform:** Use the Circuit Lab to drag and drop gates, "
-                "then click Run to simulate on the quantum engine."
-            )
-
-        # ── Decoherence ────────────────────────────────────────────────────
-        if any(w in p for w in ["decoherence", "noise", "error", "nisq"]):
-            return (
-                "**Quantum Decoherence** is the loss of quantum properties due to environmental interaction.\n\n"
-                "**Main error types:**\n"
-                "- **Bit flip (X error):** |0⟩ ↔ |1⟩ accidentally flipped\n"
-                "- **Phase flip (Z error):** |+⟩ ↔ |−⟩ phase corrupted\n"
-                "- **Depolarizing:** random Pauli error with probability p\n"
-                "- **Amplitude damping:** qubit decays from |1⟩ to |0⟩ (energy loss)\n\n"
-                "**T1 and T2 times:**\n"
-                "- T1 = relaxation time (|1⟩ → |0⟩)\n"
-                "- T2 = dephasing time (phase coherence lost)\n"
-                "- Current hardware: T1/T2 ~ microseconds to milliseconds\n\n"
-                "**NISQ era:** Noisy Intermediate-Scale Quantum computers have 50-1000 qubits "
-                "but no full error correction yet."
-            )
-
-        # ── Default fallback ───────────────────────────────────────────────
+        # ── Dynamic Fallback for Any General Quantum Query ──────────────────
         return (
-            "Great question! Here's what I can tell you about quantum computing:\n\n"
-            "**Core topics I can explain in detail:**\n"
-            "- **Qubits & States:** superposition, Bloch sphere, statevectors\n"
-            "- **Gates:** H, X, Y, Z, CNOT, RX/RY/RZ, SWAP, Toffoli\n"
-            "- **Phenomena:** entanglement, interference, measurement, decoherence\n"
-            "- **Algorithms:** Grover, Shor, VQE, QAOA, QFT, Deutsch-Jozsa, Bernstein-Vazirani\n"
-            "- **Error Correction:** repetition code, syndrome measurement\n"
-            "- **Circuits:** how to build, run, and interpret results\n\n"
-            "Try asking something specific like:\n"
-            "- *'What is the Hadamard gate?'*\n"
-            "- *'How does Grover's algorithm work?'*\n"
-            "- *'Explain quantum entanglement'*"
+            f"**Quantum Analysis for:** `{prompt.strip()}`\n\n"
+            "In quantum computing, this concept operates by leveraging the fundamental postulates of quantum mechanics: state vector evolution in Hilbert space, unitary transformation matrices, and projective measurements.\n\n"
+            "**Key Principles:**\n"
+            "- **State Evolution:** Governed by unitary operators `U` where `U† U = I`, preserving total probability `∑|cᵢ|² = 1`.\n"
+            "- **Phase & Interference:** Amplitudes can combine constructively (amplifying correct solutions) or destructively (canceling wrong outcomes).\n"
+            "- **Measurement:** Projections collapse the quantum state into an observable eigenstate with probabilistic fidelity.\n\n"
+            "```diagram\n"
+            "    |Initial State⟩ ───► [ Unitary Evolution: U(t) ] ───► [ Measurement ] ───► Result\n"
+            "       (|0...0⟩)          (H, CNOT, Phase Gates)             (Collapse)       (Bitstring)\n"
+            "```\n\n"
+            "### 💡 Related Questions:\n"
+            "1. How can you construct this operation using elementary single and two-qubit gates?\n"
+            "2. How does this behave on a physical noisy quantum simulator?\n"
+            "3. What is the mathematical matrix representation of this transformation?"
         )

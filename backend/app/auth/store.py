@@ -123,6 +123,17 @@ class StudentStore:
         self._save()
         return rec.progress
 
+    def update_profile(self, student_id: str, level: Optional[str] = None, full_name: Optional[str] = None) -> StudentProfile:
+        rec = self.students.get(student_id)
+        if not rec:
+            raise ValueError("Student not found")
+        if level:
+            rec.profile.level = level.capitalize()
+        if full_name is not None:
+            rec.profile.full_name = full_name
+        self._save()
+        return rec.profile
+
     def update_progress(self, student_id: str, lesson_id: Optional[str] = None, backend: Optional[str] = None) -> StudentProgress:
         rec = self.students.get(student_id)
         if not rec:

@@ -4,7 +4,7 @@ import CurriculumOverview from '../components/learning/CurriculumOverview';
 import LessonView from '../components/learning/LessonView';
 import AIContextDrawer from '../components/ai/AIContextDrawer';
 
-export default function Learn() {
+export default function Learn({ studentProfile }) {
   const [curriculum, setCurriculum] = useState(null);
   const [progress, setProgress] = useState(null);
   const [mastery, setMastery] = useState(null);
@@ -144,6 +144,7 @@ export default function Learn() {
             modules={modulesList}
             progress={progress}
             mastery={mastery}
+            studentLevel={studentProfile?.level}
             onSelectLesson={handleSelectLesson}
           />
         )}
@@ -153,6 +154,7 @@ export default function Learn() {
             lesson={selectedLesson}
             progress={progress}
             mastery={mastery}
+            studentLevel={studentProfile?.level}
             onBack={handleBackToCurriculum}
             onRefreshProgress={loadLearningState}
           />

@@ -15,3 +15,10 @@ class LLMProviderInterface(ABC):
     def provider_name(self) -> str:
         pass
 
+class RecoverableProviderError(Exception):
+    """Raised when the provider fails but fallback should be attempted (e.g. 429, 500, timeout)."""
+    pass
+
+class NonRecoverableProviderError(Exception):
+    """Raised when the provider fails and fallback MUST NOT be attempted (e.g. missing API key, 401)."""
+    pass

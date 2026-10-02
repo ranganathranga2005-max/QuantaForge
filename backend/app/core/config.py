@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     # Google Gemini (free tier)
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
+    # Ollama
+    ollama_api_key: str = ""
+    ollama_base_url: str = "https://api.ollama.com/v1"
+    ollama_model: str = "nemotron-3-nano:30b"
+    ollama_timeout: int = 120
 
     class Config:
         env_file = ".env"

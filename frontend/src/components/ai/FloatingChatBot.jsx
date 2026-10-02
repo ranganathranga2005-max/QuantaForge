@@ -28,20 +28,123 @@ function inlineFormat(text) {
   return parts.length ? parts : text;
 }
 
-function renderBubbleText(text) {
+function parseAiResponse(fullText) {
+  if (!fullText) return { mainText: '', diagrams: [], relatedQuestions: [] };
+
+  let text = fullText;
+  const diagrams = [];
+  const relatedQuestions = [];
+
+  // Extract related questions if present
+  const relatedMatch = text.match(/###\s*💡\s*Related Questions:([\s\S]*)$/i);
+  if (relatedMatch) {
+    const rawQuestions = relatedMatch[1].trim().split('\n');
+    rawQuestions.forEach(q => {
+      const clean = q.replace(/^\d+[\.\)]\s*/, '').replace(/^[-*•]\s*/, '').trim();
+      if (clean && clean.length > 5) {
+        relatedQuestions.push(clean);
+      }
+    });
+    text = text.replace(/###\s*💡\s*Related Questions:[\s\S]*$/i, '').trim();
+  }
+
+  // Extract diagram code blocks (```diagram ... ``` or ``` ... ```)
+  const codeBlockRegex = /```(?:diagram|ascii)?\n([\s\S]*?)```/g;
+  let match;
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    diagrams.push(match[1].trim());
+  }
+
+  // Remove code blocks from main narrative text to avoid duplication
+  const narrativeText = text.replace(codeBlockRegex, '').trim();
+
+  return { narrativeText, diagrams, relatedQuestions };
+}
+
+function renderBubbleContent(text, onSelectQuestion) {
   if (!text) return null;
-  return text.split('\n').map((line, i) => {
-    if (!line.trim()) return <br key={i} />;
-    if (/^[-*]\s/.test(line)) {
-      return (
-        <div key={i} style={{ display:'flex', gap:'6px', marginBottom:'3px' }}>
-          <span style={{ color:'#1D4ED8', flexShrink:0 }}>•</span>
-          <span>{inlineFormat(line.replace(/^[-*]\s/, ''))}</span>
+  const { narrativeText, diagrams, relatedQuestions } = parseAiResponse(text);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {/* Narrative Explanation */}
+      <div>
+        {narrativeText.split('\n').map((line, i) => {
+          if (!line.trim()) return <div key={i} style={{ height: '4px' }} />;
+          if (/^[-*•]\s/.test(line)) {
+            return (
+              <div key={i} style={{ display:'flex', gap:'6px', marginBottom:'3px' }}>
+                <span style={{ color:'#1D4ED8', flexShrink:0 }}>•</span>
+                <span>{inlineFormat(line.replace(/^[-*•]\s/, ''))}</span>
+              </div>
+            );
+          }
+          return <div key={i} style={{ marginBottom:'3px' }}>{inlineFormat(line)}</div>;
+        })}
+      </div>
+
+      {/* Visual Diagrams */}
+      {diagrams.map((diag, dIdx) => (
+        <div key={dIdx} style={{
+          backgroundColor: '#0F172A',
+          color: '#38BDF8',
+          padding: '10px 12px',
+          borderRadius: '6px',
+          border: '1px solid #334155',
+          fontFamily: 'monospace',
+          fontSize: '0.78rem',
+          lineHeight: '1.45',
+          overflowX: 'auto',
+          whiteSpace: 'pre'
+        }}>
+          <div style={{ fontSize: '0.65rem', color: '#94A3B8', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            📐 Quantum Circuit / State Diagram
+          </div>
+          {diag}
         </div>
-      );
-    }
-    return <div key={i} style={{ marginBottom:'2px' }}>{inlineFormat(line)}</div>;
-  });
+      ))}
+
+      {/* Interactive Related Question Buttons */}
+      {relatedQuestions.length > 0 && (
+        <div style={{
+          marginTop: '6px',
+          paddingTop: '8px',
+          borderTop: '1px solid #E2E8F0',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px'
+        }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#1D4ED8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            💡 Related Questions:
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {relatedQuestions.map((q, qIdx) => (
+              <button
+                key={qIdx}
+                onClick={() => onSelectQuestion && onSelectQuestion(q)}
+                style={{
+                  textAlign: 'left',
+                  background: '#F8FAFC',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  padding: '5px 10px',
+                  fontSize: '0.74rem',
+                  color: '#1E293B',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  lineHeight: '1.3'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.backgroundColor = '#EFF6FF'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+              >
+                👉 {q}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 const QUICK_QUESTIONS = [
@@ -312,7 +415,7 @@ export default function FloatingChatBot({ pageContext = 'general' }) {
                         color: isAi ? '#1E293B' : '#FFFFFF',
                         fontSize:'0.875rem', lineHeight:1.55
                       }}>
-                        {renderBubbleText(msg.text)}
+                        {renderBubbleContent(msg.text, (q) => sendMessage(q))}
                         {isAi && msg.sources && msg.sources.length > 0 && (
                           <div style={{
                             marginTop:'8px', paddingTop:'6px',

@@ -9,6 +9,8 @@ import RightInspector from '../components/quantum/RightInspector';
 import AlgorithmModePanel from '../components/quantum/AlgorithmModePanel';
 import ExperimentModePanel from '../components/quantum/ExperimentModePanel';
 import AIContextDrawer from '../components/ai/AIContextDrawer';
+import LevelSelector from '../components/learning/LevelSelector';
+import { fetchLevel, setUserLevel } from '../services/learningApi';
 
 export default function Lab() {
   const location = useLocation();
@@ -32,6 +34,7 @@ export default function Lab() {
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   // Simulation State
+  const [userLevel, setUserLevelState] = useState('Beginner');
   const [simResult, setSimResult] = useState(null);
   const [parallelResults, setParallelResults] = useState(null);
   const [isStale, setIsStale] = useState(false);
@@ -39,6 +42,20 @@ export default function Lab() {
   const [error, setError] = useState(null);
   const [isResultWorkspaceOpen, setIsResultWorkspaceOpen] = useState(false);
   const [parameterPrompt, setParameterPrompt] = useState(null);
+
+  useEffect(() => {
+    async function loadLvl() {
+      const data = await fetchLevel();
+      if (data?.level) setUserLevelState(data.level);
+    }
+    loadLvl();
+
+    const handleLevelChanged = (e) => {
+      if (e.detail?.level) setUserLevelState(e.detail.level);
+    };
+    window.addEventListener('learning:level_changed', handleLevelChanged);
+    return () => window.removeEventListener('learning:level_changed', handleLevelChanged);
+  }, []);
 
   // Helper to push history
   const pushStateToHistory = (newGates, newQubitCount = numQubits) => {
@@ -295,6 +312,39 @@ export default function Lab() {
     let newQubits = 2;
     let gates = [];
     switch(algoId) {
+      // ── Beginner Presets ──
+      case 'superposition':
+        newQubits = 1;
+        gates = [
+          { id: 'g1', gate: 'H', qubit: 0, col: 1 },
+          { id: 'g2', gate: 'M', qubit: 0, col: 2 }
+        ];
+        break;
+      case 'not_flip':
+        newQubits = 1;
+        gates = [
+          { id: 'g1', gate: 'X', qubit: 0, col: 1 },
+          { id: 'g2', gate: 'M', qubit: 0, col: 2 }
+        ];
+        break;
+      case 'phase_flip':
+        newQubits = 1;
+        gates = [
+          { id: 'g1', gate: 'H', qubit: 0, col: 1 },
+          { id: 'g2', gate: 'Z', qubit: 0, col: 2 },
+          { id: 'g3', gate: 'H', qubit: 0, col: 3 },
+          { id: 'g4', gate: 'M', qubit: 0, col: 4 }
+        ];
+        break;
+      case 'rotation_ry':
+        newQubits = 1;
+        gates = [
+          { id: 'g1', gate: 'RY', qubit: 0, col: 1, parameters: { theta: 1.5708 } },
+          { id: 'g2', gate: 'M', qubit: 0, col: 2 }
+        ];
+        break;
+
+      // ── Intermediate Presets ──
       case 'bell':
         newQubits = 2;
         gates = [
@@ -313,6 +363,21 @@ export default function Lab() {
           { id: 'g4', gate: 'M', qubit: 0, col: 4 },
           { id: 'g5', gate: 'M', qubit: 1, col: 4 },
           { id: 'g6', gate: 'M', qubit: 2, col: 4 }
+        ];
+        break;
+      case 'teleport':
+        newQubits = 3;
+        gates = [
+          { id: 'g1', gate: 'H', qubit: 0, col: 1 },
+          { id: 'g2', gate: 'H', qubit: 1, col: 1 },
+          { id: 'g3', gate: 'CNOT', control: 1, target: 2, col: 2 },
+          { id: 'g4', gate: 'CNOT', control: 0, target: 1, col: 3 },
+          { id: 'g5', gate: 'H', qubit: 0, col: 4 },
+          { id: 'g6', gate: 'M', qubit: 0, col: 5 },
+          { id: 'g7', gate: 'M', qubit: 1, col: 5 },
+          { id: 'g8', gate: 'CNOT', control: 1, target: 2, col: 6 },
+          { id: 'g9', gate: 'CZ', control: 0, target: 2, col: 7 },
+          { id: 'g10', gate: 'M', qubit: 2, col: 8 }
         ];
         break;
       case 'deutsch':
@@ -341,6 +406,8 @@ export default function Lab() {
           { id: 'g10', gate: 'M', qubit: 1, col: 6 }
         ];
         break;
+
+      // ── Advanced Presets ──
       case 'grover':
         newQubits = 2;
         gates = [
@@ -366,7 +433,21 @@ export default function Lab() {
           { id: 'g1', gate: 'H', qubit: 0, col: 1 },
           { id: 'g2', gate: 'S', qubit: 0, col: 2 },
           { id: 'g3', gate: 'H', qubit: 1, col: 3 },
-          { id: 'g4', gate: 'SWAP', control: 0, target: 1, col: 4 }
+          { id: 'g4', gate: 'SWAP', control: 0, target: 1, col: 4 },
+          { id: 'g5', gate: 'M', qubit: 0, col: 5 },
+          { id: 'g6', gate: 'M', qubit: 1, col: 5 }
+        ];
+        break;
+      case 'qec':
+        newQubits = 3;
+        gates = [
+          { id: 'g1', gate: 'H', qubit: 0, col: 1 },
+          { id: 'g2', gate: 'CNOT', control: 0, target: 1, col: 2 },
+          { id: 'g3', gate: 'CNOT', control: 0, target: 2, col: 3 },
+          { id: 'g4', gate: 'X', qubit: 1, col: 4 }, // Error injection
+          { id: 'g5', gate: 'M', qubit: 0, col: 5 },
+          { id: 'g6', gate: 'M', qubit: 1, col: 5 },
+          { id: 'g7', gate: 'M', qubit: 2, col: 5 }
         ];
         break;
       case 'vqe':
@@ -374,7 +455,8 @@ export default function Lab() {
         gates = [
           { id: 'g1', gate: 'RY', qubit: 0, col: 1, parameters: { theta: 0.785 } },
           { id: 'g2', gate: 'CNOT', control: 0, target: 1, col: 2 },
-          { id: 'g3', gate: 'M', qubit: 0, col: 3 }
+          { id: 'g3', gate: 'M', qubit: 0, col: 3 },
+          { id: 'g4', gate: 'M', qubit: 1, col: 3 }
         ];
         break;
       case 'qaoa':
@@ -385,7 +467,8 @@ export default function Lab() {
           { id: 'g3', gate: 'CNOT', control: 0, target: 1, col: 2 },
           { id: 'g4', gate: 'RZ', qubit: 1, col: 3, parameters: { theta: 0.5 } },
           { id: 'g5', gate: 'CNOT', control: 0, target: 1, col: 4 },
-          { id: 'g6', gate: 'M', qubit: 0, col: 5 }
+          { id: 'g6', gate: 'M', qubit: 0, col: 5 },
+          { id: 'g7', gate: 'M', qubit: 1, col: 5 }
         ];
         break;
       default:
@@ -600,6 +683,12 @@ export default function Lab() {
             </select>
           </div>
 
+          {/* Level Switcher in Lab Header */}
+          <LevelSelector
+            compact={true}
+            onLevelChange={(lvl) => setUserLevelState(lvl)}
+          />
+
           <button
             className="btn"
             onClick={() => setIsAiDrawerOpen(true)}
@@ -635,40 +724,100 @@ export default function Lab() {
         </div>
       </div>
 
-      {/* SECONDARY MODE BAR */}
+      {/* SECONDARY MODE BAR WITH PRESET TEMPLATES */}
       <div style={{
         backgroundColor: '#F8FAFC',
         borderBottom: '1px solid var(--border-subtle)',
         padding: '6px 24px',
         display: 'flex',
-        gap: '4px'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '8px'
       }}>
-        {[
-          { id: 'builder', label: 'BUILDER' },
-          { id: 'code', label: 'CODE' },
-          { id: 'algorithms', label: 'ALGORITHMS' },
-          { id: 'experiment', label: 'EXPERIMENT' }
-        ].map(m => (
-          <button
-            key={m.id}
-            onClick={() => setActiveMode(m.id)}
+        <div style={{ display: 'flex', gap: '4px' }}>
+          {[
+            { id: 'builder', label: 'BUILDER' },
+            { id: 'code', label: 'CODE' },
+            { id: 'algorithms', label: 'ALGORITHMS' },
+            { id: 'experiment', label: 'EXPERIMENT' }
+          ].map(m => (
+            <button
+              key={m.id}
+              onClick={() => setActiveMode(m.id)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '4px',
+                border: 'none',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                cursor: 'pointer',
+                backgroundColor: activeMode === m.id ? '#FFFFFF' : 'transparent',
+                color: activeMode === m.id ? 'var(--accent-primary)' : 'var(--text-muted)',
+                borderBottom: activeMode === m.id ? '2px solid var(--accent-primary)' : '2px solid transparent',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Level-Grouped Circuit Presets Dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
+            {userLevel.toUpperCase()} PRESETS:
+          </span>
+          <select
+            defaultValue=""
+            onChange={(e) => {
+              if (e.target.value) {
+                handleLoadAlgorithmTemplate(e.target.value);
+                e.target.value = '';
+              }
+            }}
             style={{
-              padding: '6px 14px',
-              borderRadius: '4px',
-              border: 'none',
+              padding: '4px 10px',
               fontSize: '0.78rem',
-              fontWeight: 700,
+              fontWeight: 600,
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #CBD5E1',
+              borderRadius: '6px',
+              color: '#0F172A',
               fontFamily: 'var(--font-mono)',
-              cursor: 'pointer',
-              backgroundColor: activeMode === m.id ? '#FFFFFF' : 'transparent',
-              color: activeMode === m.id ? 'var(--accent-primary)' : 'var(--text-muted)',
-              borderBottom: activeMode === m.id ? '2px solid var(--accent-primary)' : '2px solid transparent',
-              transition: 'all 0.15s ease'
+              cursor: 'pointer'
             }}
           >
-            {m.label}
-          </button>
-        ))}
+            <option value="" disabled>⚡ Load {userLevel} Preset...</option>
+            {userLevel === 'Beginner' && (
+              <optgroup label="🌱 Beginner Tier Presets">
+                <option value="superposition">|+⟩ Equal Superposition (H)</option>
+                <option value="not_flip">|1⟩ Pauli-X Bit Flip</option>
+                <option value="phase_flip">|-⟩ Pauli-Z Phase Inversion</option>
+                <option value="rotation_ry">Ry(π/2) Arbitrary Rotation</option>
+              </optgroup>
+            )}
+            {userLevel === 'Intermediate' && (
+              <optgroup label="⚡ Intermediate Tier Presets">
+                <option value="bell">Bell State |Φ⁺⟩ Entanglement</option>
+                <option value="ghz">3-Qubit GHZ Entangled State</option>
+                <option value="teleport">Quantum Teleportation Protocol</option>
+                <option value="deutsch">Deutsch-Jozsa Balanced Oracle</option>
+                <option value="bv">Bernstein-Vazirani Algorithm</option>
+              </optgroup>
+            )}
+            {userLevel === 'Advanced' && (
+              <optgroup label="🚀 Advanced Tier Presets">
+                <option value="grover">Grover 2-Qubit Search & Diffusion</option>
+                <option value="qft">Quantum Fourier Transform (QFT)</option>
+                <option value="qec">3-Qubit Bit-Flip QEC Code</option>
+                <option value="vqe">Hardware-Efficient VQE Ansatz</option>
+                <option value="qaoa">QAOA Max-Cut Ansatz Circuit</option>
+              </optgroup>
+            )}
+          </select>
+        </div>
       </div>
 
       {/* Execution Error Banner */}

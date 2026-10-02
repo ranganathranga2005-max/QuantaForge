@@ -27,6 +27,20 @@ export async function fetchLesson(lessonId) {
   }
 }
 
+export async function completeLesson(lessonId) {
+  try {
+    const res = await post(`/api/learning/lessons/${lessonId}/complete`, {});
+    if (res?.level_up && res?.new_level) {
+      window.dispatchEvent(new CustomEvent('learning:level_up', { detail: res }));
+      window.dispatchEvent(new CustomEvent('learning:level_changed', { detail: { level: res.new_level } }));
+    }
+    return res;
+  } catch (err) {
+    console.warn(`Failed to complete lesson ${lessonId}`, err);
+    return null;
+  }
+}
+
 export async function submitExercise(exerciseId, answer) {
   return await post(`/api/learning/exercises/${exerciseId}/submit`, { exercise_id: exerciseId, answer });
 }
@@ -65,11 +79,42 @@ export async function fetchMastery() {
   }
 }
 
-export async function fetchRecommendations() {
+export async function fetchRecommendations(level = null) {
   try {
-    return await get('/api/learning/recommendations');
+    const query = level ? `?level=${encodeURIComponent(level)}` : '';
+    return await get(`/api/learning/recommendations${query}`);
   } catch (err) {
     console.warn('Failed to fetch recommendations', err);
+    return null;
+  }
+}
+
+export async function fetchLevel() {
+  try {
+    return await get('/api/learning/level');
+  } catch (err) {
+    console.warn('Failed to fetch level', err);
+    return { level: 'Beginner' };
+  }
+}
+
+export async function setUserLevel(level) {
+  try {
+    const res = await post('/api/learning/level', { level });
+    // Dispatch custom DOM event so all subscribed components update immediately
+    window.dispatchEvent(new CustomEvent('learning:level_changed', { detail: { level } }));
+    return res;
+  } catch (err) {
+    console.warn('Failed to set level', err);
+    return { status: 'error', level };
+  }
+}
+
+export async function fetchCurriculumTracks() {
+  try {
+    return await get('/api/learning/tracks');
+  } catch (err) {
+    console.warn('Failed to fetch curriculum tracks', err);
     return null;
   }
 }

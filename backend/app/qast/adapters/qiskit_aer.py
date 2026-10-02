@@ -34,6 +34,7 @@ try:
     from qiskit_aer import AerSimulator
     _QISKIT_AVAILABLE = True
 except ImportError:
+    qiskit = None
     _QISKIT_AVAILABLE = False
 from typing import Optional, List, Dict, Any, Tuple
 
@@ -70,7 +71,7 @@ class QiskitAerAdapter:
             return
         self.simulator = AerSimulator(method="statevector")
 
-    def _apply_gate_to_qc(self, qc: qiskit.QuantumCircuit, op_gate: str,
+    def _apply_gate_to_qc(self, qc: Any, op_gate: str,
                           qubits: List[int], parameters: Optional[Dict]) -> None:
         """Apply a single gate to a Qiskit QuantumCircuit."""
         if op_gate == 'X':

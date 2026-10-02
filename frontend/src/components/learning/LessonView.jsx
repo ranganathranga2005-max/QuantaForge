@@ -8,11 +8,33 @@ import InlineBlochSimulator from './InlineBlochSimulator';
 import InlineInterferenceSandbox from './InlineInterferenceSandbox';
 import BugHuntPanel from './BugHuntPanel';
 import CodeExportModal from './CodeExportModal';
+import { completeLesson } from '../../services/learningApi';
 
-export default function LessonView({ lesson, mastery, onBack, onRefreshProgress }) {
+export default function LessonView({ lesson, progress, mastery, onBack, onRefreshProgress }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('lesson');
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [completedSuccess, setCompletedSuccess] = useState(false);
+
+  const isAlreadyCompleted = (progress?.completed_lessons || []).includes(lesson?.id) || completedSuccess;
+
+  const handleMarkComplete = async () => {
+    if (!lesson?.id) return;
+    setIsCompleting(true);
+    try {
+      const res = await completeLesson(lesson.id);
+      setCompletedSuccess(true);
+      window.dispatchEvent(new CustomEvent('rewards:xp_awarded', {
+        detail: { xp: 50, reason: `Mastered Lesson: ${lesson.title}` }
+      }));
+      if (onRefreshProgress) onRefreshProgress();
+    } catch (e) {
+      console.warn('Failed to complete lesson:', e);
+    } finally {
+      setIsCompleting(false);
+    }
+  };
 
   if (!lesson) return null;
 
@@ -274,10 +296,24 @@ export default function LessonView({ lesson, mastery, onBack, onRefreshProgress 
             </div>
           )}
 
-          {/* Action to Practice */}
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            <button className="btn btn-primary" onClick={() => setActiveTab('practice')} style={{ padding: '12px 32px', fontSize: '0.95rem', fontWeight: 700 }}>
+          {/* Action to Practice & Complete Lesson */}
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', padding: '24px 0', flexWrap: 'wrap' }}>
+            <button className="btn" onClick={() => setActiveTab('practice')} style={{ padding: '12px 24px', fontSize: '0.9rem', fontWeight: 700 }}>
               CONTINUE TO PRACTICE EXERCISES →
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleMarkComplete}
+              disabled={isCompleting || isAlreadyCompleted}
+              style={{
+                padding: '12px 28px',
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                backgroundColor: isAlreadyCompleted ? '#10B981' : 'var(--accent-primary)',
+                borderColor: isAlreadyCompleted ? '#10B981' : 'var(--accent-primary)'
+              }}
+            >
+              {isCompleting ? 'Recording Mastery...' : isAlreadyCompleted ? '✓ LESSON COMPLETED (+50 XP)' : '✓ MARK LESSON COMPLETE (+50 XP)'}
             </button>
           </div>
         </div>

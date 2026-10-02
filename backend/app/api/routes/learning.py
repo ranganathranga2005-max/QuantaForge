@@ -91,9 +91,15 @@ def get_lesson(lesson_id: str) -> Dict[str, Any]:
 
 @router.post("/lessons/{lesson_id}/complete")
 def complete_lesson(lesson_id: str) -> Dict[str, Any]:
-    """Mark a lesson as completed in learner progress."""
+    """Mark a lesson as completed in learner progress and check for auto-level promotion."""
     learning_store.record_lesson_completion(lesson_id)
-    return {"status": "success", "lesson_id": lesson_id, "completed": True}
+    progression = learning_store.check_level_progression(CURRICULUM)
+    return {
+        "status": "success",
+        "lesson_id": lesson_id,
+        "completed": True,
+        **progression
+    }
 
 @router.get("/progress")
 def get_progress() -> Dict[str, Any]:
@@ -102,8 +108,10 @@ def get_progress() -> Dict[str, Any]:
 
 @router.post("/progress")
 def update_progress(record: ProgressRecord) -> Dict[str, Any]:
-    """Update learner progress for a specific lesson."""
-    return learning_store.update_progress(record.lesson_id, record.status)
+    """Update learner progress for a specific lesson and check for auto-level promotion."""
+    res = learning_store.update_progress(record.lesson_id, record.status)
+    progression = learning_store.check_level_progression(CURRICULUM)
+    return {**res, **progression}
 
 @router.get("/assessments/{assessment_id}")
 def get_assessment(assessment_id: str) -> Dict[str, Any]:
@@ -271,13 +279,19 @@ def submit_exercise(exercise_id: str, submission: ExerciseSubmission) -> Dict[st
     score = 1.0 if passed else 0.0
     learning_store.record_exercise_attempt(exercise_id, concept_id, passed, score)
 
+    xp_awarded = 0
+    if passed:
+        learning_store.award_xp(50, f"Passed exercise {exercise_id}")
+        xp_awarded = 50
+
     return {
         "exercise_id": exercise_id,
         "passed": passed,
         "is_correct": passed,
         "score": score,
         "feedback": feedback,
-        "explanation": found_ex.get("explanation", "")
+        "explanation": found_ex.get("explanation", ""),
+        "xp_awarded": xp_awarded
     }
 
 @router.get("/mastery")
@@ -290,14 +304,59 @@ def get_mastery() -> Dict[str, Any]:
     }
 
 @router.get("/recommendations")
-def get_recommendations() -> Dict[str, Any]:
-    """Get rule-based learning recommendations."""
-    rec = learning_store.get_recommendation(CURRICULUM)
-    rec["all_recommendations"] = learning_store.get_recommendations(CURRICULUM)
+def get_recommendations(level: Optional[str] = Query(None)) -> Dict[str, Any]:
+    """Get level-adaptive rule-based learning recommendations."""
+    rec = learning_store.get_recommendation(CURRICULUM, user_level=level)
+    rec["all_recommendations"] = learning_store.get_recommendations(CURRICULUM, user_level=level)
+    rec["level_tracks"] = learning_store.get_level_tracks(CURRICULUM)
+    rec["active_level"] = level or learning_store.get_selected_difficulty()
     return rec
 
+@router.get("/level")
+def get_user_level() -> Dict[str, Any]:
+    """Get active curriculum difficulty tier."""
+    lvl = learning_store.get_selected_difficulty()
+    return {
+        "level": lvl,
+        "tracks": learning_store.get_level_tracks(CURRICULUM)
+    }
+
+@router.post("/level")
+def set_user_level(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Set active curriculum difficulty tier (Beginner, Intermediate, Advanced)."""
+    level = payload.get("level", "Beginner")
+    updated_lvl = learning_store.set_selected_difficulty(level)
+    return {
+        "status": "success",
+        "level": updated_lvl,
+        "tracks": learning_store.get_level_tracks(CURRICULUM)
+    }
+
+@router.get("/tracks")
+def get_curriculum_tracks() -> Dict[str, Any]:
+    """Get all 3 curated level tracks with completion stats."""
+    return learning_store.get_level_tracks(CURRICULUM)
 
 @router.post("/hints")
 def request_hint(hint_req: HintRequest) -> HintResponse:
     """Provide progressive hints for lessons or challenges."""
     return learning_store.generate_hint(hint_req, CURRICULUM)
+
+# ── Gamification: Streaks & XP Rewards Endpoints ──────────────────────────────
+
+@router.get("/rewards/status")
+def get_rewards_status() -> Dict[str, Any]:
+    """Get student XP, streaks, level tiers, and achievement badges."""
+    return learning_store.get_rewards_status()
+
+@router.post("/rewards/claim_daily")
+def claim_daily_streak() -> Dict[str, Any]:
+    """Claim daily streak reward bonus XP."""
+    return learning_store.claim_daily_streak()
+
+@router.post("/rewards/award_xp")
+def award_xp_reward(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Award XP for quantum activities (circuits, AI chat, lessons)."""
+    amount = payload.get("amount", 25)
+    reason = payload.get("reason", "Quantum Activity")
+    return learning_store.award_xp(amount, reason)

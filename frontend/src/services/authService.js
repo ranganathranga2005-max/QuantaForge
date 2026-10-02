@@ -69,6 +69,9 @@ export async function signup({ username, email, password, full_name = '', level 
     body: JSON.stringify({ username, email, password, full_name, level }),
   });
   saveToken(data.token);
+  if (data?.profile?.level) {
+    window.dispatchEvent(new CustomEvent('learning:level_changed', { detail: { level: data.profile.level } }));
+  }
   return data;
 }
 
@@ -82,6 +85,9 @@ export async function login({ username, password }) {
     body: JSON.stringify({ username, password }),
   });
   saveToken(data.token);
+  if (data?.profile?.level) {
+    window.dispatchEvent(new CustomEvent('learning:level_changed', { detail: { level: data.profile.level } }));
+  }
   return data;
 }
 
@@ -108,6 +114,9 @@ export async function getMe() {
     const data = await request(`${BASE}/me`);
     // If backend returns demo account with no token, treat as not logged in
     if (data?.profile?.student_id === 'student_demo_1' && !token) return null;
+    if (data?.profile?.level) {
+      window.dispatchEvent(new CustomEvent('learning:level_changed', { detail: { level: data.profile.level } }));
+    }
     return data;
   } catch {
     clearToken();

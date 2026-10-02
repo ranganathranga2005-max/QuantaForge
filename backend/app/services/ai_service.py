@@ -125,7 +125,7 @@ class AIService:
             validated = AIActionValidator.validate_action(proposed, envelope)
             proposed_actions.append(validated)
 
-        provider_name = getattr(active_provider, "provider_name", "unknown")
+        provider_name = getattr(active_provider, "last_provider_used", None) or getattr(active_provider, "provider_name", "unknown")
         status = "mock_response" if provider_name == "mock_provider" else ("success" if answer != "llm_not_configured" else "llm_not_configured")
 
         return AIResponse(

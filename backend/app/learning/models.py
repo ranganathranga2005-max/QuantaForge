@@ -150,6 +150,15 @@ class LearnerProgress(BaseModel):
     last_active_lesson: Optional[str] = None
     hints_requested_count: int = 0
     mistakes_count: int = 0
+    # Gamification: XP, Streaks & Achievements
+    xp: int = 450
+    streak_days: int = 3
+    last_active_date: Optional[str] = None
+    level: int = 2
+    level_title: str = "Qubit Apprentice"
+    badges: List[str] = Field(default_factory=lambda: ["FIRST_QUBIT", "SUPERPOSITION_EXPLORER"])
+    today_xp: int = 150
+    daily_goal_xp: int = 200
 
 class HintRequest(BaseModel):
     lesson_id: str

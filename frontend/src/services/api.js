@@ -1,8 +1,7 @@
-/**
- * Core API Service — Shared Request Handler & Error Normalizer
- */
+import { buildApiUrl } from '../config/apiConfig';
 
 export async function request(url, options = {}) {
+  const fullUrl = buildApiUrl(url);
   const defaultHeaders = { 'Content-Type': 'application/json' };
   const config = {
     ...options,
@@ -13,7 +12,7 @@ export async function request(url, options = {}) {
   };
 
   try {
-    const res = await fetch(url, config);
+    const res = await fetch(fullUrl, config);
     const text = await res.text();
     let data;
     try {

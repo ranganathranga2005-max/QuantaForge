@@ -1,10 +1,11 @@
-# QuantumLearning System Architecture — Pre-Phase-7 Engineering Baseline
+# Quantum Mastery System Architecture & Engineering Baseline
 
 ## 1. System Overview
 
-**QuantumLearning** is a full-stack, execution-backed quantum education and research platform built on modern Web & Python technology stacks:
+**Quantum Mastery** is a full-stack, execution-backed dynamic quantum education and research platform built on modern Web & Python technology stacks:
 - **Backend**: FastAPI (Python 3.11), custom M1 NumPy simulation engine, Qiskit Aer, PennyLane, Cirq, and Pydantic v2 schemas.
 - **Frontend**: React 19, Vite 8, React Router v7, Custom Quantum Design System (`QuantumPrimitives.jsx`).
+- **Master Flowchart & Complete Architecture**: See [MASTER_FLOWCHART_AND_ARCHITECTURE.md](file:///c:/Users/Shaik%20Mubeena/OneDrive/Desktop/quantum/AI-based-Interactive-Quantum-Algorithim-Learning-Platform/docs/architecture/MASTER_FLOWCHART_AND_ARCHITECTURE.md).
 
 The core architectural invariant is the strict separation between **Quantum Execution** (scientific engines M1/M2/M3) and **Educational/UI Domain Layers**. Educational features, exercises, assessments, and AI context inspectors consume actual simulation data and execution traces without altering or faking backend physics.
 
